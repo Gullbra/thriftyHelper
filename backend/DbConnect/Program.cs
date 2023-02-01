@@ -1,7 +1,12 @@
-﻿using Npgsql;
+﻿using DbConnect;
+using Npgsql;
 using System;
 using System.Data.SqlTypes;
 using ThriftyHelper.Backend.DbConnect;
+
+/*
+ https://zetcode.com/csharp/postgresql/
+ */
 
 Sectrets ENV = new();
 
@@ -10,40 +15,14 @@ using NpgsqlConnection dbConnection = new(connectionString);
 
 dbConnection.Open();
 
-/* Access Scalar
-string sqlString = "SELECT version()";
-using NpgsqlCommand sqlCommand = new (sqlString, dbConnection);
- 
-string sqlVersion = sqlCommand.ExecuteScalar().ToString();
-Console.WriteLine($"PostgreSQL version: {sqlVersion}");
- */
+SqlOperations.GetSqlVersion(dbConnection);
 
-/* Create Table*/
-using NpgsqlCommand sqlCommand = new();
-sqlCommand.Connection = dbConnection;
+// SqlOperations.CreateTable(dbConnection);
 
-sqlCommand.CommandText = "DROP TABLE IF EXISTS cars";
-sqlCommand.ExecuteNonQuery();
+// SqlOperations.InsertRow(dbConnection);
 
-sqlCommand.CommandText = @"CREATE TABLE cars(id SERIAL PRIMARY KEY,
-	name VARCHAR(255), price INT)";
-sqlCommand.ExecuteNonQuery();
+// SqlOperations.GetAllColumns(dbConnection);
 
-List<KeyValuePair<string, int>> carList = new ()
-{
-	new KeyValuePair<string, int>("Audi", 52642),
-	new KeyValuePair<string, int>("Mercedes", 57127),
-	new KeyValuePair<string, int>("Skoda", 9000),
-	new KeyValuePair<string, int>("Volve", 29000),
-	new KeyValuePair<string, int>("Bently",350000),
-	new KeyValuePair<string, int>("Citroën", 21000),
-	new KeyValuePair<string, int>("Volkswagen", 21600)
-};
+SqlOperations.GetAllWithColumnHeaders(dbConnection);
 
-foreach (var kv in carList)
-{
-	sqlCommand.CommandText = $"INSERT INTO cars(name, price) VALUES ('{kv.Key}', {kv.Value})";
-	sqlCommand.ExecuteNonQuery();
-}
-
-Console.WriteLine("Table cars created");
+dbConnection.Close();
