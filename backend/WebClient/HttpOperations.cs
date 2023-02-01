@@ -6,39 +6,39 @@ using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace WebAPIClient
+namespace Backend.WebAPIClient;
+
+internal class HttpOperations
 {
-	internal class HttpOperations
+	public static async Task PrintReposInfo(HttpClient client)
 	{
-		public static async Task PrintReposInfo(HttpClient client)
-		{
-			var json = await client.GetStringAsync(
-				"https://api.github.com/users/gullbra/repos");
+		var json = await client.GetStringAsync(
+			"https://api.github.com/users/gullbra/repos");
 
-			Console.WriteLine(json);
-		}
+		Console.WriteLine(json);
+	}
 
-		public static async Task PrintReposName(HttpClient client)
-		{
-			await using Stream stream = await client.GetStreamAsync(
-				"https://api.github.com/users/gullbra/repos");
-			var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(stream);
+	public static async Task PrintReposName(HttpClient client)
+	{
+		await using Stream stream = await client.GetStreamAsync(
+			"https://api.github.com/users/gullbra/repos");
+		var repositories = await JsonSerializer.DeserializeAsync<List<Repository>>(stream);
 
-			// coalescing operators (?? and ??=):
-			//	for repo in (repositories or an empty list if repositories == null)
-			foreach (var repo in repositories ?? Enumerable.Empty<Repository>())
-				Console.WriteLine(repo.Name);
-		}
+		// coalescing operators (?? and ??=):
+		//	for repo in (repositories or an empty list if repositories == null)
+		foreach (var repo in repositories ?? Enumerable.Empty<Repository>())
+			Console.WriteLine(repo.Name);
+	}
 
-		public static async Task<List<Repository>> ReturnRepoObj(HttpClient client)
-		{
-			await using Stream stream =
-				await client.GetStreamAsync("https://api.github.com/users/gullbra/repos");
+	public static async Task<List<Repository>> ReturnRepoObj(HttpClient client)
+	{
+		await using Stream stream =
+			await client.GetStreamAsync("https://api.github.com/users/gullbra/repos");
 
-			var repositories =
-					await JsonSerializer.DeserializeAsync<List<Repository>>(stream);
+		var repositories =
+				await JsonSerializer.DeserializeAsync<List<Repository>>(stream);
 
-			return repositories ?? new();
-		}
+		return repositories ?? new();
 	}
 }
+
