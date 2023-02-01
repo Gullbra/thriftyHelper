@@ -1,101 +1,99 @@
-﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.Arm;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+//using ThriftyHelper.Backend.ClassLibrary;
 
-namespace DbConnect;
+using Npgsql;
+using System.Data.Common;
+using System.Linq;
+using ThriftyHelper.Backend.DbConnect;
+
+namespace Backend.DbConnect;
 internal class SqlOperations
 {
-	public static string GetSqlVersion(NpgsqlConnection dbConnection)
+	internal static NpgsqlConnection OpenConnection()
 	{
-		/* Access Scalar */
-		string sqlString = "SELECT version()";
-		using NpgsqlCommand sqlCommand = new (sqlString, dbConnection);
- 
-		string? sqlVersion = sqlCommand.ExecuteScalar().ToString();
-		return $"PostgreSQL version: {sqlVersion}";
+		Sectrets ENV = new();
+
+		string connectionString = $"Host={ENV.Host};Username={ENV.Username};Password={ENV.Password};Database={ENV.Database}";
+		return new NpgsqlConnection(connectionString);
+
 	}
-
-	public static void CreateTable(NpgsqlConnection dbConnection) 
+	public static void test()
 	{
-		/* Create Table*/
-		using NpgsqlCommand sqlCommand = new();
-		sqlCommand.Connection = dbConnection;
+		/*
+		Sectrets ENV = new();
 
-		sqlCommand.CommandText = "DROP TABLE IF EXISTS cars";
-		sqlCommand.ExecuteNonQuery();
+		string connectionString = $"Host={ENV.Host};Username={ENV.Username};Password={ENV.Password};Database={ENV.Database}";
+		using NpgsqlConnection dbConnection = new(connectionString);
+		*/
+		NpgsqlConnection dbConnection = OpenConnection();
+		dbConnection.Open();
 
-		/* SERIAL makes the column auto--increment in POstgreSQL*/
-		sqlCommand.CommandText = @"CREATE TABLE cars(id SERIAL PRIMARY KEY, name VARCHAR(255), price INT)";
-		sqlCommand.ExecuteNonQuery();
+		string recipyName = "blodpudding med ägg och bacon";
 
-		List<KeyValuePair<string, int>> carList = new()
-		{
-			new KeyValuePair<string, int>("Audi", 52642),
-			new KeyValuePair<string, int>("Mercedes", 57127),
-			new KeyValuePair<string, int>("Skoda", 9000),
-			new KeyValuePair<string, int>("Volvo", 29000),
-			new KeyValuePair<string, int>("Bently",350000),
-			new KeyValuePair<string, int>("Citroën", 21000),
-			new KeyValuePair<string, int>("Volkswagen", 21600)
-		};
+		NpgsqlCommand sqlCommand = new(
+			"SELECT * " +
+			"FROM stored_recipies " +
+			$"WHERE name = '{recipyName}';",
+			dbConnection);
 
-		foreach (var kv in carList)
-		{
-			sqlCommand.CommandText = $"INSERT INTO cars(name, price) VALUES ('{kv.Key}', {kv.Value})";
-			sqlCommand.ExecuteNonQuery();
-		}
+		NpgsqlDataReader reader = sqlCommand.ExecuteReader();
 
-		Console.WriteLine("Table cars created");
-	}
+		reader.Read();
+		var rec_id = reader.GetInt32(0);
+		var rec_desc = reader.GetString(2);
 
-	public static void InsertRow(NpgsqlConnection dbConnection, string name = "BMW", int price = 36600)
-	{
-		using NpgsqlCommand sqlCommand = new(); sqlCommand.Connection = dbConnection;
-		/* @ infront of values adds a placeholder parameter, which protects against SQL injection attacks*/
-		sqlCommand.CommandText = "INSERT INTO cars(name, price) VALUES(@name, @price);";
+		Console.WriteLine("\tfirst query:");
+		Console.WriteLine($"recipy_id: {rec_id}");
+		Console.WriteLine($"recipy_desc: {rec_desc}");
+		Console.WriteLine();
 
-		/* actual values added as parameters*/
-		sqlCommand.Parameters.AddWithValue("name", name);
-		sqlCommand.Parameters.AddWithValue("price", price);
+		dbConnection.Close();
+		dbConnection = OpenConnection();
+		dbConnection.Open();
 
-		/* command built */
-		sqlCommand.Prepare();
+		sqlCommand = new(
+			"SELECT * " +
+			"FROM ingredients_in_recepies " +
+			$"WHERE recipy_id = {rec_id};",
+			dbConnection);
 
-		sqlCommand.ExecuteNonQuery();
-		Console.WriteLine("Row inserted");
-	}
+		reader = sqlCommand.ExecuteReader();
 
-	public static void GetAllColumns(NpgsqlConnection dbConnection)
-	{
-		using NpgsqlCommand sqlCommand = new();
-		sqlCommand.Connection = dbConnection;
-		sqlCommand.CommandText = "SELECT * FROM cars;"; /* in this case equal to: "SELECT id, name, price FROM cars;"*/
-
-		/* NpgsqlDataReader: a fast, forward-only and read-only object to access query results */
-		using NpgsqlDataReader reader= sqlCommand.ExecuteReader();
-
-		/* reading results one row at a time */
-		while (reader.Read()) 
-		{
-			Console.WriteLine("{0} {1} {2}", reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2));
-		}
-	}
-
-	public static void GetAllWithColumnHeaders (NpgsqlConnection dbConnection)
-	{
-		using NpgsqlCommand sqlCommand = new("SELECT * FROM cars", dbConnection);
-
-		using NpgsqlDataReader reader = sqlCommand.ExecuteReader();
-
-		Console.WriteLine($"{reader.GetName(0),-4} {reader.GetName(1),-10} {reader.GetName(2),10}");
-
+		List<int> ingredients_id_list = new ();
+		List<double> ingredients_quantity_list = new();
 		while (reader.Read())
 		{
-			Console.WriteLine($"{reader.GetInt32(0),-4} {reader.GetString(1),-10} {reader.GetInt32(2),10}");
+			ingredients_id_list.Add(reader.GetInt32(1));
+			Console.WriteLine($"Ingredient_id: {reader.GetInt32(1)}");
+			ingredients_quantity_list.Add(reader.GetDouble(2));
+			Console.WriteLine($"Quantity: {reader.GetDouble(2)}");
 		}
+
+		dbConnection.Close();
+		dbConnection = OpenConnection();
+		dbConnection.Open();
+
+		//string tesingWhereQuery = "WHERE " + string.Join(", ", ingredients_id_list.Select(num => $"ingredient_id = {num}"));
+		sqlCommand = new(
+			"SELECT * " +
+			"FROM stored_ingredients " +
+			"WHERE " + string.Join(" OR ", ingredients_id_list.Select(num => $"ingredient_id = {num}")) + ";",
+			dbConnection);
+
+		reader = sqlCommand.ExecuteReader();
+
+		//List<string> ingredients_name_list = new();
+		//List<string> ingredients_quantity_list = new();
+		while (reader.Read())
+		{
+			Console.WriteLine($"Ingredient name: {reader.GetString(1)}");
+			Console.WriteLine($"Ingredient unit: {reader.GetString(2)}");
+			Console.WriteLine($"Price/unit: {reader.GetDouble(3)}");
+			Console.WriteLine($"E/unit: {reader.GetDouble(4)}");
+			Console.WriteLine($"Protein/unit: {reader.GetDouble(5)}");
+		}
+		/*
+
+		*/
 	}
 }
