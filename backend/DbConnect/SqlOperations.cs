@@ -1,14 +1,10 @@
-﻿
-//using ThriftyHelper.Backend.ClassLibrary;
-
-using Npgsql;
+﻿using Npgsql;
 using System.Data.Common;
 using System.Linq;
 using ThriftyHelper.Backend.ClassLibrary;
-using ThriftyHelper.Backend.DbConnect;
 
-namespace Backend.DbConnect;
-internal class SqlOperations
+namespace ThriftyHelper.Backend.DbConnect;
+public class SqlOperations
 {
 	internal static NpgsqlConnection OpenConnection()
 	{
@@ -76,6 +72,7 @@ internal class SqlOperations
 				reader.GetDouble(3),
 				reader.GetDouble(4),
 				reader.GetDouble(5)));
+			i++;
 		}
 
 		Console.WriteLine("\n\tthird query:");
