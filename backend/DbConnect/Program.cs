@@ -73,7 +73,7 @@ foreach ingredient in recipy
  */
 
 
-SqlOperations.test();
+SqlOperations.GetRecipy("blodpudding med ägg och bacon");
 
 
 /*
