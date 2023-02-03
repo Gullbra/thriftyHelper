@@ -1,0 +1,34 @@
+{
+  "name": "thriftyhelper",
+  "version": "1.0.0",
+  "description": "A personal project to collect recipies, and ingredient data",
+  "main": "\"\"",
+  "scripts": {
+    "start-api": "dotnet watch run --project ./backend/API/API.csproj --urls http://localhost:5001",
+    "start-react": "cd frontend && npm start && cd ..",
+    "start": "concurrently -k \"npm run start-api\" \"npm run start-react\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gullbra/thriftyHelper.git"
+  },
+  "keywords": [
+    "React",
+    "Node",
+    "Dotnet",
+    "ASP.NET",
+    "Core",
+    "SQL",
+    "PostgreSQL",
+    "pgAdmin"
+  ],
+  "author": "Martin Gullbrandsson, https://github.com/Gullbra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gullbra/thriftyHelper/issues"
+  },
+  "homepage": "https://github.com/Gullbra/thriftyHelper#readme",
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

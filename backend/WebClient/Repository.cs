@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 	only the defined properties will be serialized into a C# object 
  */
 
-namespace WebAPIClient
+namespace Backend.WebAPIClient
 {
 	// parsing the JSON properties into Repository Object Properties
 	public record class Repository(

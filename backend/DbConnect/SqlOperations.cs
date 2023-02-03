@@ -8,11 +8,10 @@ public class SqlOperations
 {
 	internal static NpgsqlConnection OpenConnection()
 	{
-		Sectrets ENV = new();
-
-		string connectionString = $"Host={ENV.Host};Username={ENV.Username};Password={ENV.Password};Database={ENV.Database}";
+		string connectionString = $"Host={Sectrets.Host};Username={Sectrets.Username};Password={Sectrets.Password};Database={Sectrets.Database}";
 		return new NpgsqlConnection(connectionString);
 	}
+
 	public static Recipy GetRecipy(string recipyName)
 	{
 		NpgsqlConnection dbConnection = OpenConnection();
@@ -41,14 +40,14 @@ public class SqlOperations
 			dbConnection);
 		reader = sqlCommand.ExecuteReader();
 
-		List<int> ingredients_id_list = new ();
-		List<double> ingredients_quantity_list = new();
+		List<int> ingredientsIdList = new ();
+		List<double> ingredientsQuantityList = new();
 		Console.WriteLine("\n\tsecond query:");
 		while (reader.Read())
 		{
-			ingredients_id_list.Add(reader.GetInt32(1));
+			ingredientsIdList.Add(reader.GetInt32(1));
+			ingredientsQuantityList.Add(reader.GetDouble(2));
 			Console.WriteLine($"Ingredient_id: {reader.GetInt32(1)}");
-			ingredients_quantity_list.Add(reader.GetDouble(2));
 			Console.WriteLine($"Quantity: {reader.GetDouble(2)}");
 		}
 
@@ -57,7 +56,7 @@ public class SqlOperations
 		sqlCommand = new(
 			"SELECT * " +
 			"FROM stored_ingredients " +
-			"WHERE " + string.Join(" OR ", ingredients_id_list.Select(num => $"ingredient_id = {num}")) + ";",
+			"WHERE " + string.Join(" OR ", ingredientsIdList.Select(num => $"ingredient_id = {num}")) + ";",
 			dbConnection);
 		reader = sqlCommand.ExecuteReader();
 
@@ -67,7 +66,7 @@ public class SqlOperations
 		{
 			ingredientsList.Add(new Ingredient(
 				reader.GetString(1),
-				ingredients_quantity_list[i],
+				ingredientsQuantityList[i],
 				reader.GetString(2),
 				reader.GetDouble(3),
 				reader.GetDouble(4),
@@ -76,13 +75,13 @@ public class SqlOperations
 		}
 
 		Console.WriteLine("\n\tthird query:");
-		foreach ( Ingredient ingredient in ingredientsList ) 
+		foreach (Ingredient ingredient in ingredientsList)
 		{
 			Console.WriteLine($"name: {ingredient.Name}, unit: {ingredient.Unit}, Price/unit: {ingredient.PricePerUnit}, E/unit: {ingredient.EnergyPerUnit}, P/unit: {ingredient.ProteinPerUnit}");
 		}
 
 
 		dbConnection.Close();
-		return new Recipy(recipyName, ingredientsList, rec_desc);
+		return new Recipy (recipyName, ingredientsList, rec_desc);
 	}
 }
