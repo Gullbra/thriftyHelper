@@ -74,4 +74,7 @@ ingredients_in_recepies
 */
 
 // For testing through commandline:
-// SqlOperations.GetRecipy("blodpudding med ägg och bacon");
+//SqlOperations.GetRecipy("blodpudding med ägg och bacon");
+Console.WriteLine("\tTesting new:");
+var TestObj = new NewSqlOperations(true);
+TestObj.TestingConnection();
