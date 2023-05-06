@@ -26,40 +26,32 @@ public class ConnStr
 			uri.UserInfo.Split(':')[0], 
 			uri.UserInfo.Split(':')[1], 
 			uri.Port > 0 ? uri.Port : 5432);
-
-		//var uriString = Sectrets.HostedConnectionString;
-		//var uri = new Uri(uriString);
-		//var db = uri.AbsolutePath.Trim('/');
-		//var user = uri.UserInfo.Split(':')[0];
-		//var passwd = uri.UserInfo.Split(':')[1];
-		//var port = uri.Port > 0 ? uri.Port : 5432;
-		//var connStr = string.Format("Server={0};Database={1};User Id={2};Password={3};Port={4}",
-		//		uri.Host, db, user, passwd, port);
-		//return connStr;
 	}
 }
 
 public class SqlOperations
 {
-	static NpgsqlConnection dbConnection;
-	static bool dbLocal;
-	static string recipyTableName;
-	static string ingredientsTableName;
-	static string ingredientsInRecipiesTableName;
+	private readonly NpgsqlConnection dbConnection;
+	// private readonly NpgsqlDataSource dbDataSource;
+	private readonly bool dbLocal;
+	private readonly string recipyTableName;
+	private readonly string ingredientsTableName;
+	private readonly string ingredientsInRecipiesTableName;
 
 	public SqlOperations() : this(false) { }
 	public SqlOperations(bool devMode)
 	{
 		dbLocal = devMode;
 		dbConnection = new NpgsqlConnection(ConnStr.Get(devMode));
+		// dbDataSource = NpgsqlDataSource.Create(ConnStr.Get(devMode));
 		recipyTableName = dbLocal ? "stored_recipies" : "thrifty_helper__stored_recipies";
 		ingredientsTableName = dbLocal ? "stored_ingredients" : "thrifty_helper__stored_ingredients";
 		ingredientsInRecipiesTableName = dbLocal ? "ingredients_in_recipies" : "thrifty_helper__ingredients_in_recepies";
 	}
 
-	public void TestingConnection()
+	public void TestConnection()
 	{
-		Console.WriteLine($"\tTesting: Select: Hosted={!dbLocal}:");
+		Console.WriteLine($"\n\tTesting Connection: Hosted={!dbLocal}:");
 		dbConnection.Open();
 
 		NpgsqlCommand sqlCommand = new(
@@ -75,14 +67,14 @@ public class SqlOperations
 				Console.WriteLine($"Table: {reader.GetString(0)}");
 			}
 		}
-		catch (Exception err) { Console.WriteLine($"Excepton encountered: {err.Message}"); }
+		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
 
 		dbConnection.Close();
 	}
 
 	public void SetUpDb()
 	{
-		Console.WriteLine($"\tSetting up db: db: Hosted={!dbLocal}:");
+		Console.WriteLine($"\n\tSetting up db: Hosted={!dbLocal}:");
 
 		dbConnection.Open();
 		NpgsqlCommand sqlCommand = new($@"
@@ -123,23 +115,25 @@ public class SqlOperations
 
 	public void InsertNewIngredient(Ingredient newIngredient)
 	{
-		Console.WriteLine($"Inserting new Ingredient: db: Hosted={!dbLocal}: \n");
+		Console.WriteLine($"\n\tInserting new Ingredient: Hosted={!dbLocal}:");
 		dbConnection.Open();
 
 		NpgsqlCommand sqlCommand = new(
 			$@"INSERT INTO {ingredientsTableName} (
-				ingredient_name
-				ingredient_unit
-				price_per_unit
-				energy_per_unit
-				protein_per_unit			
+				ingredient_name,
+				ingredient_unit,
+				price_per_unit,
+				energy_per_unit,
+				protein_per_unit,
+				last_updated
 			) VALUES (
-				'{newIngredient.Name}'
-				'{newIngredient.Unit}'
-				{newIngredient.PricePerUnit}
-				{newIngredient.EnergyPerUnit}
-				{newIngredient.ProteinPerUnit}
-			) RETURN *;",
+				'{newIngredient.Name}',
+				'{newIngredient.Unit}',
+				{newIngredient.PricePerUnit},
+				{newIngredient.EnergyPerUnit},
+				{newIngredient.ProteinPerUnit},
+				CURRENT_TIMESTAMP
+			) RETURNING *;",
 			dbConnection);
 
 		try 
@@ -147,14 +141,80 @@ public class SqlOperations
 			var reader = sqlCommand.ExecuteReader();
 			while (reader.Read())
 			{
-				Console.WriteLine($"Ingredient_id: {reader.GetInt32(0)}, Ingredient_name: {reader.GetString(1)}");
+				Console.WriteLine($"Ingredient_id: {reader.GetInt32(0)},\nIngredient_name: {reader.GetString(1)},\nIngredient_unit: {reader.GetString(2)},\nPrice_per_unit: {reader.GetDouble(3)},\nEnergy_per_price: {reader.GetDouble(4)},\nProtein_per_price: {reader.GetDouble(5)}");
 			}
 		}
 		catch (Exception err) { Console.WriteLine($"Eception Encountered: {err.Message}"); }
 
 		dbConnection.Close();
 	}
+
+	public Ingredient? GetIngredientByName(string ingredientName) 
+	{
+		Console.WriteLine($"\n\tRetrieving ingredient \"{ingredientName}\": Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new(
+			$@"SELECT * 
+			FROM {ingredientsTableName}  
+			WHERE ingredient_name = '{ingredientName}';",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			Console.WriteLine("SQL success!");
+
+			while (reader.Read())
+			{
+				return new Ingredient(
+					reader.GetInt32(0),
+					null,
+					reader.GetString(1),
+					reader.GetString(2),
+					reader.GetDouble(3),
+					reader.GetDouble(4),
+					reader.GetDouble(5),
+					reader.GetDateTime(6));
+			}
+		}
+		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		return null;
+	}
+	public List<Ingredient>? GetIngredientsList() 
+	{
+		Console.WriteLine($"\n\tRetrieving all stored ingredients: Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new(
+			$@"SELECT * 
+			FROM {ingredientsTableName};",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			List<Ingredient> ingredientsList = new();
+			while (reader.Read())
+			{
+				ingredientsList.Add(new Ingredient(
+					reader.GetInt32(0),
+					null,
+					reader.GetString(1),
+					reader.GetString(2),
+					reader.GetDouble(3),
+					reader.GetDouble(4),
+					reader.GetDouble(5),
+					reader.GetDateTime(6)));
+			}
+			Console.WriteLine("SQL success!");
+			return ingredientsList;
+		}
+		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		return null;
+	}
 }
+
 
 /*
 
@@ -233,12 +293,14 @@ public class OldSqlOperations
 		while (reader.Read())
 		{
 			ingredientsList.Add(new Ingredient(
-				reader.GetString(1),
-				ingredientsQuantityList[i],
-				reader.GetString(2),
-				reader.GetDouble(3),
-				reader.GetDouble(4),
-				reader.GetDouble(5)));
+					reader.GetInt32(0),
+					null,
+					reader.GetString(1),
+					reader.GetString(2),
+					reader.GetDouble(3),
+					reader.GetDouble(4),
+					reader.GetDouble(5),
+					reader.GetDateTime(6)));
 			i++;
 		}
 

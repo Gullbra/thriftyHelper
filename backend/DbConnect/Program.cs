@@ -76,9 +76,11 @@ ingredients_in_recepies
 
 // For testing through commandline:
 //SqlOperations.GetRecipy("blodpudding med ägg och bacon");
-Console.WriteLine("\tTesting new:");
-var TestObj = new SqlOperations(true);
-TestObj.TestingConnection();
-TestObj.InsertNewIngredient(new Ingredient(
-	"TestIngredient", 200, "g", 200, 300, 10
-	));
+
+var TestConLocal = new SqlOperations(true);
+// TestConLocal.TestConnection();
+// TestConLocal.SetUpDb();
+// TestConLocal.TestConnection();
+var retrievedData = TestConLocal.GetIngredientsList();
+
+Console.WriteLine(@$"Entries: {retrievedData.Count}");
