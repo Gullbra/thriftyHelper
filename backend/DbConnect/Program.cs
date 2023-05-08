@@ -81,6 +81,24 @@ var TestConLocal = new SqlOperations(true);
 // TestConLocal.TestConnection();
 // TestConLocal.SetUpDb();
 // TestConLocal.TestConnection();
-var retrievedData = TestConLocal.GetIngredientsList();
+var retrievedData = TestConLocal.UpdateIngredient(new Ingredient(
+	4,
+	null,
+	"hey",
+	"g",
+	50,
+	200,
+	15,
+	null));
 
-Console.WriteLine(@$"Entries: {retrievedData.Count}");
+Console.WriteLine(@$"
+Id: {retrievedData.Id}
+Name: {retrievedData.Name}
+");
+
+
+
+//foreach (var ingredient in retrievedData.Ingredients)
+//{
+//	Console.WriteLine($"\t{ingredient.Name} - {ingredient.Quantity} {ingredient.Unit}");
+//}

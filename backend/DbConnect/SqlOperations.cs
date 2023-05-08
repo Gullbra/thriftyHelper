@@ -113,49 +113,14 @@ public class SqlOperations
 		dbConnection.Close();
 	}
 
-	public void InsertNewIngredient(Ingredient newIngredient)
-	{
-		Console.WriteLine($"\n\tInserting new Ingredient: Hosted={!dbLocal}:");
-		dbConnection.Open();
-
-		NpgsqlCommand sqlCommand = new(
-			$@"INSERT INTO {ingredientsTableName} (
-				ingredient_name,
-				ingredient_unit,
-				price_per_unit,
-				energy_per_unit,
-				protein_per_unit,
-				last_updated
-			) VALUES (
-				'{newIngredient.Name}',
-				'{newIngredient.Unit}',
-				{newIngredient.PricePerUnit},
-				{newIngredient.EnergyPerUnit},
-				{newIngredient.ProteinPerUnit},
-				CURRENT_TIMESTAMP
-			) RETURNING *;",
-			dbConnection);
-
-		try 
-		{ 
-			var reader = sqlCommand.ExecuteReader();
-			while (reader.Read())
-			{
-				Console.WriteLine($"Ingredient_id: {reader.GetInt32(0)},\nIngredient_name: {reader.GetString(1)},\nIngredient_unit: {reader.GetString(2)},\nPrice_per_unit: {reader.GetDouble(3)},\nEnergy_per_price: {reader.GetDouble(4)},\nProtein_per_price: {reader.GetDouble(5)}");
-			}
-		}
-		catch (Exception err) { Console.WriteLine($"Eception Encountered: {err.Message}"); }
-
-		dbConnection.Close();
-	}
-
+	/* Ingredients*/
 	public Ingredient? GetIngredientByName(string ingredientName) 
 	{
 		Console.WriteLine($"\n\tRetrieving ingredient \"{ingredientName}\": Hosted={!dbLocal}:");
 		dbConnection.Open();
 
-		NpgsqlCommand sqlCommand = new(
-			$@"SELECT * 
+		NpgsqlCommand sqlCommand = new($@"
+			SELECT * 
 			FROM {ingredientsTableName}  
 			WHERE ingredient_name = '{ingredientName}';",
 			dbConnection);
@@ -179,6 +144,7 @@ public class SqlOperations
 			}
 		}
 		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
 		return null;
 	}
 	public List<Ingredient>? GetIngredientsList() 
@@ -186,8 +152,8 @@ public class SqlOperations
 		Console.WriteLine($"\n\tRetrieving all stored ingredients: Hosted={!dbLocal}:");
 		dbConnection.Open();
 
-		NpgsqlCommand sqlCommand = new(
-			$@"SELECT * 
+		NpgsqlCommand sqlCommand = new($@"
+			SELECT * 
 			FROM {ingredientsTableName};",
 			dbConnection);
 
@@ -211,6 +177,178 @@ public class SqlOperations
 			return ingredientsList;
 		}
 		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
+		return null;
+	}
+
+	public Ingredient? InsertNewIngredient(Ingredient newIngredient)
+	{
+		Console.WriteLine($"\n\tInserting new Ingredient {newIngredient.Name}: Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new(
+			$@"INSERT INTO {ingredientsTableName} (
+				ingredient_name,
+				ingredient_unit,
+				price_per_unit,
+				energy_per_unit,
+				protein_per_unit,
+				last_updated
+			) VALUES (
+				'{newIngredient.Name}',
+				'{newIngredient.Unit}',
+				{newIngredient.PricePerUnit},
+				{newIngredient.EnergyPerUnit},
+				{newIngredient.ProteinPerUnit},
+				CURRENT_TIMESTAMP
+			) RETURNING *;",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			while (reader.Read())
+			{
+				Console.WriteLine($"Ingredient_id: {reader.GetInt32(0)},\nIngredient_name: {reader.GetString(1)},\nIngredient_unit: {reader.GetString(2)},\nPrice_per_unit: {reader.GetDouble(3)},\nEnergy_per_price: {reader.GetDouble(4)},\nProtein_per_price: {reader.GetDouble(5)}");
+
+				return new Ingredient(
+					reader.GetInt32(0),
+					null,
+					reader.GetString(1),
+					reader.GetString(2),
+					reader.GetDouble(3),
+					reader.GetDouble(4),
+					reader.GetDouble(5),
+					reader.GetDateTime(6));
+			}
+		}
+		catch (Exception err) { Console.WriteLine($"Eception Encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
+
+		return null;
+	}
+	public Ingredient? UpdateIngredient(Ingredient updateInfo)
+	{
+		Console.WriteLine($"\n\tUpdating Ingredient {updateInfo.Name}: Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new($@"
+			UPDATE {ingredientsTableName}
+			SET 
+				ingredient_name = '{updateInfo.Name}',
+				price_per_unit = {updateInfo.PricePerUnit},
+				energy_per_unit = {updateInfo.EnergyPerUnit},
+				protein_per_unit = {updateInfo.ProteinPerUnit},
+				last_updated = CURRENT_TIMESTAMP
+			WHERE ingredient_id = {updateInfo.Id}
+			RETURNING *;",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			while (reader.Read())
+			{
+				Console.WriteLine($"Ingredient_id: {reader.GetInt32(0)},\nIngredient_name: {reader.GetString(1)},\nIngredient_unit: {reader.GetString(2)},\nPrice_per_unit: {reader.GetDouble(3)},\nEnergy_per_price: {reader.GetDouble(4)},\nProtein_per_price: {reader.GetDouble(5)}");
+
+				return new Ingredient(
+					reader.GetInt32(0),
+					null,
+					reader.GetString(1),
+					reader.GetString(2),
+					reader.GetDouble(3),
+					reader.GetDouble(4),
+					reader.GetDouble(5),
+					reader.GetDateTime(6));
+			}
+		}
+		catch (Exception err) { Console.WriteLine($"Eception Encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
+
+		return null;
+	}
+
+	/* Recipies*/
+	public Recipy? GetRecipyByName(string recipyName)
+	{
+		Console.WriteLine($"\n\tRetrieving recipy \"{recipyName}\": Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new($@"
+			SELECT st.*, ip.*, si.*
+			FROM {recipyTableName} st
+				INNER JOIN {ingredientsInRecipiesTableName} ip
+					ON st.recipy_id = ip.recipy_id
+				INNER JOIN {ingredientsTableName} si
+					ON ip.ingredient_id = si.ingredient_id
+			WHERE recipy_name = '{recipyName}';
+			",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			Console.WriteLine("SQL success!");
+
+			Recipy? returnRecipy = null;
+			List<Ingredient> ingredientsList = new();
+
+			while (reader.Read())
+			{
+				returnRecipy ??= new Recipy(
+					reader.GetInt32(0),
+					reader.GetString(1),
+					null,
+					reader.GetString(2));
+
+				ingredientsList.Add(new Ingredient(
+					reader.GetInt32(4),
+					reader.GetDouble(5),
+					reader.GetString(7),
+					reader.GetString(8),
+					reader.GetDouble(9),
+					reader.GetDouble(10),
+					reader.GetDouble(11),
+					reader.GetDateTime(12)));
+			}
+
+			returnRecipy.Ingredients = ingredientsList;
+
+			return returnRecipy;
+		}
+		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
+
+		return null;
+	}
+	public List<Recipy>? GetRecipyList()
+	{
+		Console.WriteLine($"\n\tRetrieving all stored recipies: Hosted={!dbLocal}:");
+		dbConnection.Open();
+
+		NpgsqlCommand sqlCommand = new($@"
+			SELECT * 
+			FROM {recipyTableName};",
+			dbConnection);
+
+		try
+		{
+			var reader = sqlCommand.ExecuteReader();
+			List<Recipy> recipyList = new();
+			while (reader.Read())
+			{
+				recipyList.Add(new Recipy(
+					reader.GetInt32(0),
+					reader.GetString(1),
+					new List<Ingredient>(),
+					reader.GetString(2)
+				));
+			}
+			Console.WriteLine("SQL success!");
+			return recipyList;
+		}
+		catch (Exception err) { Console.WriteLine($"Exception encountered: {err.Message}"); }
+		finally { dbConnection.Close(); }
 		return null;
 	}
 }
@@ -312,7 +450,7 @@ public class OldSqlOperations
 
 
 		dbConnection.Close();
-		return new Recipy (recipyName, ingredientsList, rec_desc);
+		return new Recipy (null, recipyName, ingredientsList, rec_desc);
 	}
 }
 
