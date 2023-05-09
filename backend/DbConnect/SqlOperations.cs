@@ -326,9 +326,19 @@ public class SqlOperations
 		Console.WriteLine($"\n\tRetrieving all stored recipies: Hosted={!dbLocal}:");
 		dbConnection.Open();
 
+		//NpgsqlCommand sqlCommand = new($@"
+		//	SELECT * 
+		//	FROM {recipyTableName};",
+		//	dbConnection);
+
 		NpgsqlCommand sqlCommand = new($@"
-			SELECT * 
-			FROM {recipyTableName};",
+			SELECT st.*, ip.*, si.*
+			FROM {recipyTableName} st
+				INNER JOIN {ingredientsInRecipiesTableName} ip
+					ON st.recipy_id = ip.recipy_id
+				INNER JOIN {ingredientsTableName} si
+					ON ip.ingredient_id = si.ingredient_id;
+			",
 			dbConnection);
 
 		try
@@ -337,12 +347,35 @@ public class SqlOperations
 			List<Recipy> recipyList = new();
 			while (reader.Read())
 			{
-				recipyList.Add(new Recipy(
-					reader.GetInt32(0),
-					reader.GetString(1),
-					new List<Ingredient>(),
-					reader.GetString(2)
-				));
+				if(recipyList.Count == 0 || recipyList.Last().Id != reader.GetInt32(0))
+				{
+					recipyList.Add(new Recipy(
+						reader.GetInt32(0),
+						reader.GetString(1),
+						new List<Ingredient>() 
+						{ new Ingredient(         
+								reader.GetInt32(4),
+								reader.GetDouble(5),
+								reader.GetString(7),
+								reader.GetString(8),
+								reader.GetDouble(9),
+								reader.GetDouble(10),
+								reader.GetDouble(11),
+								reader.GetDateTime(12))
+						},
+						reader.GetString(2)));
+				} else
+				{
+					recipyList.Last().Ingredients.Add(new Ingredient(
+						reader.GetInt32(4),
+						reader.GetDouble(5),
+						reader.GetString(7),
+						reader.GetString(8),
+						reader.GetDouble(9),
+						reader.GetDouble(10),
+						reader.GetDouble(11),
+						reader.GetDateTime(12)));
+				}
 			}
 			Console.WriteLine("SQL success!");
 			return recipyList;

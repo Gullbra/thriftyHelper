@@ -8,21 +8,25 @@ namespace ThriftyHelper.Backend.ClassLibrary;
 public class Ingredient
 {
 	public Ingredient(
-		string name, double quantity, string unit, 
-		double pricePerUnit, double energyPerUnit, double proteinPerUnit)
+		int? id, double? quantity, string name, string unit, 
+		double pricePerUnit, double energyPerUnit, double proteinPerUnit, DateTime? dateTime)
 	{
+		Id = id;
 		Name = name.ToLower();
 		Quantity = quantity;
 		Unit = unit.ToLower();
 		PricePerUnit = pricePerUnit;
 		EnergyPerUnit = energyPerUnit;
 		ProteinPerUnit = proteinPerUnit;
+		LastUpdated = dateTime;
 	}
 
+	public int? Id { get; set; }
+	public double? Quantity { get; set; }
 	public string Name { get; set; }
-	public double Quantity { get; set; }
 	public string Unit { get; set; }
 	public double PricePerUnit { get; set; }
 	public double EnergyPerUnit { get; set; }
 	public double ProteinPerUnit { get; set; }
+	public DateTime? LastUpdated { get; set; }
 }
