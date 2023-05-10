@@ -2,24 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import './styles/base.css';
+import { IRecipy, IIngredient } from './util/interfaces';
+import { Layout } from './AppLayout';
 
 let firstRender = true;
 const dev_url = "http://localhost:5001/api/Recipies/blodpudding%20med%20ägg%20och%20bacon"
-
-interface IIngredient {
-  name: string
-  unit: string
-  quantity: number
-  pricePerUnit: number
-  energyPerUnit: number
-  proteinPerUnit: number
-}
-
-interface IRecipy {
-  name: string
-  description: string
-  ingredients: IIngredient[]
-}
 
 function App() {
   const [ recipyState, setRecipyState ] = useState<IRecipy>({} as IRecipy)
@@ -37,7 +24,7 @@ function App() {
   }, [])
 
   return (
-    <>
+    <Layout>
       {recipyState && !isLoading && (
         <>
           <h4>{recipyState.name}</h4>
@@ -48,7 +35,7 @@ function App() {
           </ul>
         </>
       )}
-    </>
+    </Layout>
   );
 }
 

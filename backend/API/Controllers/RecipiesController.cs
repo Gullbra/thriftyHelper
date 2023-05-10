@@ -10,7 +10,11 @@ namespace ThriftyHelper.Backend.API.Controllers;
 [ApiController]
 public class RecipiesController : ControllerBase
 {
-	// private readonly SqlOperations _logger;
+	/*
+		Convert to IActionResult?
+		Use a static readonly field for new SqlOperations(true/false)
+	 */
+
 
 	[EnableCors("ReactDevEnv")]
 	[HttpGet()]
@@ -25,5 +29,6 @@ public class RecipiesController : ControllerBase
 	{
 		return new SqlOperations(true).GetRecipyByName(name);
 	}
+
 }
 

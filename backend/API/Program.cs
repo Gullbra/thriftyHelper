@@ -29,3 +29,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+/*
+ dotnet watch run --urls http://localhost:5001
+ */
