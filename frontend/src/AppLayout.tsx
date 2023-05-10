@@ -1,6 +1,9 @@
 import { useState } from "react"
+import { HamburgerMenu } from "./components/HamburgerMenu"
 
 import './styles/layout.css'
+
+
 
 
 export const Layout = ({children}: {children: React.ReactNode}) => {
@@ -11,9 +14,7 @@ export const Layout = ({children}: {children: React.ReactNode}) => {
     <>
       <header className="site__header">
         <flex-wrapper class="site-header__header">
-          <div className="header__sidebar-toggle"
-            onClick={() => setShowSidebar(prev => !prev)}
-          >sidebarToggle</div>
+          <HamburgerMenu callbackFunc={() => setShowSidebar(prev => !prev)}/>
           <h1 className="header__header">Thrifty Helper</h1>
         </flex-wrapper>
         

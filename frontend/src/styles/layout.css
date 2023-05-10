@@ -18,18 +18,27 @@
   top: 0;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
 }
 .site__footer {
   height: var(--height-footer);
   bottom: 0;
 }
 
-.site-header__header {
+.site-header__header, .site-header__nav-bar {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+
+.site-header__header {
+  margin-left: 5%;
+  gap: 2rem;
+}
+.site-header__nav-bar {
+  margin-right: 5%;
 }
 
 .site__main {
