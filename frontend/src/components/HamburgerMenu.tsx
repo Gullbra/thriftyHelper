@@ -8,14 +8,12 @@ export const HamburgerMenu = ({callbackFunc}: {callbackFunc: () => void}) => {
 
   return (
     <>
-      <div className="nav-icon1"
+      <div className={`nav-icon1 --hamburger-menu-open`}
         tabIndex={0}
-        onKeyUp={event => { if(event.code.toLocaleLowerCase() == "enter") {clickHandler(event)} }}
+        onKeyUp={event => { if(event.code.toLocaleLowerCase() === "enter") {clickHandler(event)} }}
         onClick= {clickHandler}
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span/><span/><span/>
       </div>
     </>
   )

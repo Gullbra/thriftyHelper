@@ -23,7 +23,7 @@
   flex-direction: row;
   justify-content: space-between;
 
-  box-shadow: 0 2px 4px 0px var(--color-shadow);
+  box-shadow: 0 1px 4px 0px var(--color-shadow);
 }
 .site__footer {
   height: var(--height-footer);
@@ -73,7 +73,7 @@
 
   z-index: 1;
 
-  box-shadow: 1px 0px 2px 0 var(--color-shadow);
+  box-shadow: 0.5px 0px 2px 0 var(--color-shadow);
 }
 
 .--sidebar-open__main-margin {
