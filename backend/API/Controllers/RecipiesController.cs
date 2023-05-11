@@ -12,22 +12,25 @@ public class RecipiesController : ControllerBase
 {
 	/*
 		Convert to IActionResult?
-		Use a static readonly field for new SqlOperations(true/false)
 	 */
+
+  private readonly SqlOperations Db;
+
+	public RecipiesController (SqlOperations db) { Db = db; }
 
 
 	[EnableCors("ReactDevEnv")]
 	[HttpGet()]
 	public List<Recipy>? GetRecipyList()
 	{
-		return new SqlOperations(true).GetRecipyList();
+		return Db.GetRecipyList();
 	}
 
 	[EnableCors("ReactDevEnv")]
 	[HttpGet("{name}")]
 	public Recipy? GetRecipyByName(string name)
 	{
-		return new SqlOperations(true).GetRecipyByName(name);
+		return Db.GetRecipyByName(name);
 	}
 
 }
