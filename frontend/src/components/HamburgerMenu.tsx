@@ -1,6 +1,6 @@
 import '../styles/components/hamburger-menu.css'
 
-export const HamburgerMenu = ({callbackFunc}: {callbackFunc: () => void }) => {
+export const HamburgerMenu = ({callbackFunc}: {callbackFunc: () => void}) => {
   const clickHandler = (event: React.MouseEvent<HTMLDivElement, MouseEvent> | React.KeyboardEvent<HTMLDivElement>) => {
     event.currentTarget.classList.toggle('--hamburger-menu-open')
     callbackFunc()
@@ -8,15 +8,15 @@ export const HamburgerMenu = ({callbackFunc}: {callbackFunc: () => void }) => {
 
   return (
     <>
-    <div className="nav-icon1"
-      tabIndex={0}
-      onKeyUp={event => { if(event.code.toLocaleLowerCase() == "enter") {clickHandler(event)} }}
-      onClick= {clickHandler}
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+      <div className="nav-icon1"
+        tabIndex={0}
+        onKeyUp={event => { if(event.code.toLocaleLowerCase() == "enter") {clickHandler(event)} }}
+        onClick= {clickHandler}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </>
   )
 }
