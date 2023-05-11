@@ -27,7 +27,7 @@ export const Layout = ({children}: {children: React.ReactNode}) => {
 
       <main className={`site__main${showSidebar ? ' --sidebar-open__main-margin': ''}`}> {children} </main>
 
-      <footer className="site__footer"></footer>
+      <footer className="site__footer">Created by Gullbra</footer>
     </>
   )
 }

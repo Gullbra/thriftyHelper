@@ -7,10 +7,12 @@
 
 .site__header,
 .site__footer {
-  background-color: aqua;
+  background-color: white;
   width: 100%;
 
   position: fixed;
+
+  z-index: 2;
 }
 
 .site__header {
@@ -20,10 +22,14 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  box-shadow: 0 2px 4px 0px var(--color-shadow);
 }
 .site__footer {
   height: var(--height-footer);
   bottom: 0;
+
+  display: flex; justify-content: center; align-items: center;
 }
 
 .site-header__header, .site-header__nav-bar {
@@ -44,8 +50,14 @@
 .site__main {
   margin-top: var(--height-header);
   margin-left: 0;
+  margin-bottom: var(--height-footer);
 
+  min-height: calc(100vh - var(--height-footer) - var(--height-header));
   transition: margin-left 0.2s ease-in-out;
+
+  background-color: var(--color-grey);
+
+  display: flex; align-items: center; justify-content: center;
 }
 
 .site__sidebar {
@@ -56,8 +68,12 @@
   position: fixed;
   left: 0;
 
-  background-color: aquamarine;
+  background-color: var(--color-white-dark);
   transition: max-width 0.2s ease-in-out;
+
+  z-index: 1;
+
+  box-shadow: 1px 0px 2px 0 var(--color-shadow);
 }
 
 .--sidebar-open__main-margin {

@@ -4,9 +4,23 @@
   box-sizing: border-box;
 }
 
+/* 
+body,
+html {
+  height: 100%; width: 100%;
+} */
+
 react-render {
   display: block;
   position: relative;
+}
+
+flex-wrapper {
+  display: flex; justify-content: center; align-items: center;
+}
+
+a {
+  text-decoration: none; color: inherit; 
 }
 
 .--dev-border {
