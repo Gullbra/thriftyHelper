@@ -60,7 +60,7 @@
 }
 .nav-icon1.--hamburger-menu-open span:nth-child(2) {
   opacity: 0;
-  left: calc(var(--width-hamburger-menu) * -1);
+  left: calc(var(--padding-hbmenu) / 2 * -1);
 }
 .nav-icon1.--hamburger-menu-open span:nth-child(3) {
   top: var(--offset-second-bar);
