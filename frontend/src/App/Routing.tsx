@@ -4,28 +4,28 @@ import {
 } from "react-router-dom"
 import type { RouteObject } from "react-router-dom"
 
-import { Layout } from "./AppLayout"
+import { Layout } from "./Layout"
 import { Home } from "./views/Home"
-import { IngredientsListView } from "./views/IngredientsListView"
-import { RecipyView } from "./views/RecipyView"
+import { IngredientsView } from "./views/IngredientsView"
+import { RecipiesView } from "./views/RecipiesView"
 
 export const Routing = () => {
   const viewRoutes: RouteObject[] = [
     {
       path: "/test",
-      element: <div>Testing new react-router-feature</div>
+      element: <>Testing new react-router-feature</>
     },
     {
       path: "/",
-      element: <Home />
+      element: <Home/>
     },
     {
       path: "/ingredients",
-      element: <IngredientsListView/>
+      element: <IngredientsView/>
     },
     {
       path: "/recipies",
-      element: <RecipyView />
+      element: <RecipiesView />
     },
     {
       path: "/mealplaner",

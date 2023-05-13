@@ -22,13 +22,11 @@ export const Home = () => {
       </div>
 
       <div className="home-view__image-wrapper">
-        <p className="home-view__image-wrapper__attribution-text">
-          <UnsplashAttribution 
-            aProfile={'https://unsplash.com/@briewilly?utm_source=your_app_name&utm_medium=referral'}
-            name='Chad Montano'
-            aUnsplash={"https://unsplash.com/?utm_source=your_app_name&utm_medium=referral"}
-          />
-        </p>
+        <UnsplashAttribution 
+          aProfile={'https://unsplash.com/@briewilly?utm_source=your_app_name&utm_medium=referral'}
+          name='Chad Montano'
+          aUnsplash={"https://unsplash.com/?utm_source=your_app_name&utm_medium=referral"}
+        />
       </div>
     </div>
   )

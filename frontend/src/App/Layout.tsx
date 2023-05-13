@@ -23,7 +23,8 @@ export const Layout = () => {
         <nav className="site-header__nav-bar">
           <Link className="site-header__nav__nav-links" to={"/test"}>dev:test</Link>
           <Link className="site-header__nav__nav-links" to={"/"}>dev:home</Link>
-          <Link className="site-header__nav__nav-links" to={"ingredients/"}>Ingredients</Link>
+          <Link className="site-header__nav__nav-links" to={"/ingredients"}>Ingredients</Link>
+          <Link className="site-header__nav__nav-links" to={"/recepies"}>Recepies</Link>
         </nav>
       </header>
 
