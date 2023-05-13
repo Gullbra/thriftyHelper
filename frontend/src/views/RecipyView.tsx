@@ -6,7 +6,7 @@ import { IRecipy, IIngredient } from '../util/interfaces';
 let firstRender = true;
 const dev_url = "http://localhost:5001/api/Recipies/blodpudding%20med%20ägg%20och%20bacon"
 
-export const RecipView = () => {
+export const RecipyView = () => {
   const [ recipyState, setRecipyState ] = useState<IRecipy>({} as IRecipy)
   const [ isLoading, setIsLoading ] = useState<boolean>(true)
 

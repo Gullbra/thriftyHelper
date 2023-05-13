@@ -1,0 +1,6 @@
+.us-attribution-p {
+  display: flex; gap: 0.3em;
+}
+.us-attribution-link:hover {
+  color: var(--color-bluegrey-light);
+}

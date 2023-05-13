@@ -4,8 +4,10 @@ import {
 } from "react-router-dom"
 import type { RouteObject } from "react-router-dom"
 
-import { Home } from "./views/Home"
 import { Layout } from "./AppLayout"
+import { Home } from "./views/Home"
+import { IngredientsListView } from "./views/IngredientsListView"
+import { RecipyView } from "./views/RecipyView"
 
 export const Routing = () => {
   const viewRoutes: RouteObject[] = [
@@ -17,14 +19,27 @@ export const Routing = () => {
       path: "/",
       element: <Home />
     },
+    {
+      path: "/ingredients",
+      element: <IngredientsListView/>
+    },
+    {
+      path: "/recipies",
+      element: <RecipyView />
+    },
+    {
+      path: "/mealplaner",
+      element: <>Not yet Implemented</>
+    }
   ]
-
-  // const authRoutes: RouteObject[] = []
+ 
+  // ! should be dynamic depending on if a user is logged in or not
+  const authRoutes: RouteObject[] = []
 
   const wrappingRoutes: RouteObject[] = [{
     path: "/",
     element: <Layout />,
-    children: viewRoutes
+    children: [...viewRoutes, ...authRoutes]
   }]
 
   return (<RouterProvider router={createBrowserRouter(wrappingRoutes)} />)

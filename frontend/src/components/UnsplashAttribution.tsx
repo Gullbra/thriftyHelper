@@ -10,16 +10,17 @@ export const UnsplashAttribution = (
   const appName = "thrifty_helper"
 
   return (
-    <>
-      <a className="test-class-a"
+    <p className='us-attribution-p'>
+      Image by 
+      <a className="us-attribution-link"
         href={aProfile.replace(/utm_source=[^&]+/, `utm_source=${appName}`)}>
         {name}
       </a> 
       on 
-      <a className="test-class-a"
+      <a className="us-attribution-link"
         href={aUnsplash.replace(/utm_source=[^&]+/, `utm_source=${appName}`)}>
         Unsplash
       </a>
-    </>
+    </p>
   )
 }

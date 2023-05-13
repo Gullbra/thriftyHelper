@@ -1,4 +1,3 @@
-
 :root {
   --height-header: 6rem;
   --height-footer: 4rem;
@@ -45,6 +44,8 @@
 }
 .site-header__nav-bar {
   margin-right: 5%;
+
+  display: flex; gap: 0.8rem;
 }
 
 .site__main {
@@ -76,10 +77,16 @@
   box-shadow: 0.5px 0px 2px 0 var(--color-shadow);
 }
 
+/* 
 .--sidebar-open__main-margin {
   margin-left: var(--width-sidebar);
-}
+} 
+*/
 
 .--sidebar-open__sidebar-width {
   max-width: var(--width-sidebar);
+}
+
+.site-header__nav__nav-links:hover {
+  color: var(--color-bluegrey-light);
 }
