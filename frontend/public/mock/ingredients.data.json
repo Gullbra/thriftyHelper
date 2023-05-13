@@ -1,0 +1,46 @@
+{
+  "ingredientsList": [
+    {
+      "id": 1,
+      "name": "milk",
+      "unit": "g",
+      "pricePerUnit": 200,
+      "energyPerUnit": 2,
+      "proteinPerUnit": 0.2,
+      "lastUpdated": "2023",
+      "inCategories": [
+        "dairy"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "shrimp",
+      "unit": "g",
+      "pricePerUnit": 200,
+      "energyPerUnit": 2.2,
+      "proteinPerUnit": 0.1,
+      "lastUpdated": "2023",
+      "inCategories": [
+        "seafood"
+      ]
+
+    },
+    {
+      "id": 3,
+      "name": "lime",
+      "unit": "g",
+      "pricePerUnit": 200,
+      "energyPerUnit": 2.4,
+      "proteinPerUnit": 0.3,
+      "lastUpdated": "2023",
+      "inCategories": [
+        "fruit"
+      ]
+    }
+  ],
+  "categories": [
+    "dairy",
+    "seafood",
+    "fruit"
+  ]
+}

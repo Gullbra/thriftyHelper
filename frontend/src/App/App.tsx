@@ -7,7 +7,7 @@ import './styles/responsivness.css'
 import { Routing } from './Routing'
 import { DataContext, IDataContext } from './util/context';
 import { fetching } from './util/fetching';
-import { IIngredient, IRecipy } from './util/interfaces';
+import { IIngredientsContextData, IRecipiesContextData } from './util/interfaces';
 
 let firstRender = true
 export const App = () => {
@@ -17,20 +17,19 @@ export const App = () => {
     if (firstRender === true) {
       firstRender = false
 
-      const ingredientsPromise = fetching('Ingredients') as Promise<IIngredient[]>
-      const recipiesPromise = fetching('Recipies') as Promise<IRecipy[]>
+      const ingredientsPromise = fetching('Ingredients') as Promise<IIngredientsContextData>
+      const recipiesPromise = fetching('Recipies') as Promise<IRecipiesContextData>
       
       Promise
         .all([ingredientsPromise, recipiesPromise])
         .then(res => setData({
-          ingredientsList: res[0], 
-          recipiesList: res[1]
+          ingredients: res[0], 
+          recipies: res[1]
         }))
         .finally(() => console.log('📮 fetching called!'))
     }
   })
   console.log({data})
-
 
   return(
     <DataContext.Provider value={data}>

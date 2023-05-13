@@ -1,0 +1,49 @@
+{
+  "recipiesList": [
+    {
+      "name": "A recipy",
+      "description": "This is a mock recipy",
+      "ingredients": [
+        {
+          "id": 1, 
+          "quantity": 200
+        },
+        {
+          "id": 2, 
+          "quantity": 200
+        },
+        {
+          "id": 3, 
+          "quantity": 200
+        }
+      ],
+      "inCategories": [
+        "mockCategory1",
+        "mockCategory2"
+      ]
+    },
+    {
+      "name": "Another recipy",
+      "description": "This is another mock recipy",
+      "ingredients": [
+        {
+          "id": 2, 
+          "quantity": 200
+        },
+        {
+          "id": 3, 
+          "quantity": 200
+        }
+      ],
+      "inCategories": [
+        "mockCategory1",
+        "mockCategory3"
+      ]
+    }
+  ],
+  "categories": [
+    "mockCategory1",
+    "mockCategory2",
+    "mockCategory3"
+  ]
+}

@@ -1,8 +1,8 @@
 import { createContext } from "react"
-import { IIngredient, IRecipy } from "./interfaces";
+import { IIngredientsContextData, IRecipiesContextData } from "./interfaces";
 
 export interface IDataContext { 
-  ingredientsList: IIngredient[],
-  recipiesList: IRecipy[]
+  ingredients: IIngredientsContextData,
+  recipies: IRecipiesContextData
 }
-export const DataContext = createContext<IDataContext>({ingredientsList: [], recipiesList: []})
+export const DataContext = createContext<IDataContext>({} as IDataContext)
