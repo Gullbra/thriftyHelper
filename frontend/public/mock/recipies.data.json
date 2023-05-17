@@ -1,6 +1,7 @@
 {
   "recipiesList": [
     {
+      "id": 1,
       "name": "A recipy",
       "description": "This is a mock recipy",
       "ingredients": [
@@ -23,6 +24,7 @@
       ]
     },
     {
+      "id": 2,
       "name": "Another recipy",
       "description": "This is another mock recipy",
       "ingredients": [

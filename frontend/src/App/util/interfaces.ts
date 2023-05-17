@@ -1,4 +1,5 @@
 export interface IIngredient {
+  id: number,
   name: string,
   unit: string,
   pricePerUnit: number,
@@ -9,6 +10,7 @@ export interface IIngredient {
 }
 
 export interface IRecipy {
+  id: number,
   name: string,
   description: string,
   ingredients: {

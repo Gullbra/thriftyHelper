@@ -28,15 +28,10 @@ export const Layout = ({children}: {children?: React.ReactNode}) => {
       </header>
 
       {children 
-        ? (
-          <main className={`site__main`}> {children} </main>
-        ) : hasSidebar 
-          ? (
-            <Outlet context={[ showSidebar, setShowSidebar ]} />
-          ) : (
-            <main className={`site__main`}> <Outlet /> </main>
-          ) 
-      }
+        ? <main className={`site__main`}> {children} </main>
+        : hasSidebar 
+          ? <Outlet context={[ showSidebar, setShowSidebar ]} />
+          : <main className={`site__main`}> <Outlet /> </main>}
           
       <footer className="site__footer">Created by Gullbra</footer>
     </>
