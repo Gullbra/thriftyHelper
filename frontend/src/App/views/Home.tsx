@@ -1,4 +1,3 @@
-
 import { UnsplashAttribution } from '../components/UnsplashAttribution'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,7 +15,7 @@ export const Home = () => {
 
         <div className="home-view__greeting-wrapper__btn-container">
           <button className="home-view__greeting-wrapper__nav-button" onClick={() => navigate('/ingredients')}>Compare Ingredients</button>
-          <button className="home-view__greeting-wrapper__nav-button" onClick={() => navigate('/Recipies')}>Find Recipies</button>
+          <button className="home-view__greeting-wrapper__nav-button" onClick={() => navigate('/recipies')}>Find Recipies</button>
           <button className="home-view__greeting-wrapper__nav-button" onClick={() => navigate('/mealplaner')}>Plan your Meals</button>
         </div>
       </div>

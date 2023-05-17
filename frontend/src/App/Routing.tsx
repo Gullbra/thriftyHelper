@@ -29,25 +29,15 @@ export const Routing = () => {
     }
   ]
 
-  // //const loading
- 
+  // TODO: protected user routes with some kind of jwt
   const authRoutes: RouteObject[] = []
 
-  const wrappingRoutes: RouteObject[] = [{
+  const wrappedRoutes: RouteObject[] = [{
     path: "/",
-    element: <Layout><></></Layout>,
+    element: <Layout />,
     children: [...viewRoutes, ...authRoutes],
     errorElement: <Layout>404: Not found</Layout>
   }]
 
-  // const root: RouteObject[] = [{
-  //   path: "/",
-  //   element: <Layout />,
-  //   //children: [...viewRoutes, ...authRoutes],
-  //   errorElement: <Layout><>Hey</></Layout>
-  // }]
-
-  return (<RouterProvider router={createBrowserRouter(
-    wrappingRoutes
-  )} />)
+  return (<RouterProvider router={createBrowserRouter(wrappedRoutes)} />)
 }

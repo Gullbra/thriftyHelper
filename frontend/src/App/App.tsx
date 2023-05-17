@@ -5,7 +5,6 @@ import './styles/color-schema.css'
 import './styles/responsivness.css'
 
 import { Routing } from './Routing'
-import { Layout } from './Layout';
 import { DataContext, IDataContext } from './util/context';
 import { fetching } from './util/fetching';
 import { IIngredientsContextData, IRecipiesContextData } from './util/interfaces';
@@ -24,18 +23,13 @@ export const App = () => {
       Promise.all([ingredientsPromise, recipiesPromise])
         .then(res => setFetchedData({ ingredients: res[0], recipies: res[1] }))
         .catch(err => console.log(err))
-        .finally(() => {
-          console.log('📮 fetching called!')
-        })
+        .finally(() => console.log('📮 fetching called!'))
     }
   }, [])
-  console.log({fetchedData})
 
   return(
     <DataContext.Provider value={fetchedData}>
-      {/* <Layout> */}
-        <Routing />
-      {/* </Layout> */}
+      <Routing />
     </DataContext.Provider>
   )
 }
