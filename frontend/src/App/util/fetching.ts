@@ -18,5 +18,5 @@ export const fetching = async (enpoint: string) => {
 
   return axios.get(`${dev_url}/${enpoint}`)
     .then(res => res.data)
-    .catch(err => console.log(err.message))
+    //.catch(err => console.log(err.message))
 }

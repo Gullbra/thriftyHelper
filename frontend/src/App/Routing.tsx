@@ -12,10 +12,6 @@ import { RecipiesView } from "./views/RecipiesView"
 export const Routing = () => {
   const viewRoutes: RouteObject[] = [
     {
-      path: "/test",
-      element: <>Testing new react-router-feature</>
-    },
-    {
       path: "/",
       element: <Home/>
     },
@@ -25,22 +21,33 @@ export const Routing = () => {
     },
     {
       path: "/recipies",
-      element: <RecipiesView />
+      element: <RecipiesView/>
     },
     {
       path: "/mealplaner",
       element: <>Not yet Implemented</>
     }
   ]
+
+  // //const loading
  
-  // ! should be dynamic depending on if a user is logged in or not
   const authRoutes: RouteObject[] = []
 
   const wrappingRoutes: RouteObject[] = [{
     path: "/",
-    element: <Layout />,
-    children: [...viewRoutes, ...authRoutes]
+    element: <Layout><></></Layout>,
+    children: [...viewRoutes, ...authRoutes],
+    errorElement: <Layout>404: Not found</Layout>
   }]
 
-  return (<RouterProvider router={createBrowserRouter(wrappingRoutes)} />)
+  // const root: RouteObject[] = [{
+  //   path: "/",
+  //   element: <Layout />,
+  //   //children: [...viewRoutes, ...authRoutes],
+  //   errorElement: <Layout><>Hey</></Layout>
+  // }]
+
+  return (<RouterProvider router={createBrowserRouter(
+    wrappingRoutes
+  )} />)
 }

@@ -18,3 +18,5 @@ export const HamburgerMenu = ({callbackFunc}: {callbackFunc: () => void}) => {
     </>
   )
 }
+
+// from https://loading.io/css/
