@@ -36,7 +36,7 @@ export const Routing = () => {
     path: "/",
     element: <Layout />,
     children: [...viewRoutes, ...authRoutes],
-    errorElement: <Layout>404: Not found</Layout>
+    errorElement: <Layout><p style={{fontSize: "1.5rem", marginBottom: "2rem"}}>Ops! Nothing here...</p><p>404: Not found</p></Layout>
   }]
 
   return (<RouterProvider router={createBrowserRouter(wrappedRoutes)} />)

@@ -1,4 +1,19 @@
 
 .ingredient-view__main__mode-choice-container {
-  width: 100%;
+  margin: 4rem 2rem;
+
+  width: var(--width-inner-content);
+  justify-content: space-around;
+}
+
+.ingredients-view__main__list-wrapper {
+  margin-bottom: 4rem;
+  padding: 3rem 4rem;
+
+  width: var(--width-inner-content);
+  background-color: white;
+  flex-grow: 1;
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
 }

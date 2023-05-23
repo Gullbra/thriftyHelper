@@ -21,17 +21,18 @@ export const Layout = ({children}: {children?: React.ReactNode}) => {
         </flex-wrapper>
         
         <nav className="site-header__nav-bar">
-          <Link className="site-header__nav__nav-links" to={"/"}>Home</Link>
-          <Link className="site-header__nav__nav-links" to={"/ingredients"}>Ingredients</Link>
-          <Link className="site-header__nav__nav-links" to={"/recipies"}>Recipies</Link>
+          <Link className={`site-header__nav__nav-links`} to={"/g"}>Dev:404</Link>
+          <Link className={`site-header__nav__nav-links${currentLocation.split('/')[1] === '' ? ' --current-loc': ''}`} to={"/"}>Home</Link>
+          <Link className={`site-header__nav__nav-links${currentLocation.split('/')[1] === 'ingredients' ? ' --current-loc': ''}`} to={"/ingredients"}>Ingredients</Link>
+          <Link className={`site-header__nav__nav-links${currentLocation.split('/')[1] === 'recipies' ? ' --current-loc': ''}`} to={"/recipies"}>Recipies</Link>
         </nav>
       </header>
 
       {children 
-        ? <main className={`site__main`}> {children} </main>
+        ? <main className={`site__main --justify-c-center`}> {children} </main>
         : hasSidebar 
           ? <Outlet context={[ showSidebar, setShowSidebar ]} />
-          : <main className={`site__main`}> <Outlet /> </main>}
+          : <main className={`site__main --justify-c-center`}> <Outlet /> </main>}
           
       <footer className="site__footer">Created by Gullbra</footer>
     </>

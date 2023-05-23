@@ -4,15 +4,17 @@
   margin-bottom: var(--height-footer);
 
   min-height: calc(100vh - var(--height-footer) - var(--height-header));
+  min-width: 100%;
+  width: fit-content;
   transition: margin-left 0.3s ease-in;
 
   background-color: var(--color-grey);
 
-  display: flex; align-items: center; justify-content: center;
+  display: flex; 
+  align-items: center; 
+  flex-direction: column;
 }
 
-/* 
 .--sidebar-open__main-margin {
   margin-left: var(--width-sidebar);
 } 
-*/

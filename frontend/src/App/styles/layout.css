@@ -51,3 +51,11 @@
 .site-header__nav__nav-links:hover {
   color: var(--color-bluegrey-light);
 }
+
+.--current-loc {
+  color: blueviolet;
+}
+
+.--justify-c-center {
+  justify-content: center;
+}
