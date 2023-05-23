@@ -1,0 +1,18 @@
+.site__main {
+  margin-top: var(--height-header);
+  margin-left: 0;
+  margin-bottom: var(--height-footer);
+
+  min-height: calc(100vh - var(--height-footer) - var(--height-header));
+  transition: margin-left 0.3s ease-in;
+
+  background-color: var(--color-grey);
+
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* 
+.--sidebar-open__main-margin {
+  margin-left: var(--width-sidebar);
+} 
+*/

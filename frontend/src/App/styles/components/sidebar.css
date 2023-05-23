@@ -1,0 +1,20 @@
+.site__sidebar {
+  height: calc(100% - var(--height-header) - var(--height-footer));
+  max-width: 0;
+  width: 100%;
+
+  position: fixed;
+  left: 0;
+  overflow: hidden;
+
+  background-color: var(--color-white-dark);
+  transition: max-width 0.3s ease-in;
+
+  z-index: 1;
+
+  box-shadow: 0.5px 0px 2px 0 var(--color-shadow);
+}
+
+.--sidebar-open__sidebar-width {
+  max-width: var(--width-sidebar);
+}

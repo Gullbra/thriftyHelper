@@ -1,7 +1,10 @@
 import { useContext } from 'react'
 import { useOutletContext } from "react-router-dom"
 
-import { Sidebar, Main } from "../Layout"
+import '../styles/views/ingredients.css'
+
+import { Main } from "../components/Main"
+import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 
 export const IngredientsView = () => {
@@ -18,6 +21,11 @@ export const IngredientsView = () => {
       </Sidebar>
 
       <Main showSidebar={showSidebar}>
+        <div className='ingredient-view__main__mode-choice-container --dev-border'>
+          <h4>Ingredients List</h4>
+          {/* //! Auth protected? */}
+          <h4>Add new Ingredient</h4>
+        </div>
         <p>IngrediensView</p>
       </Main>
     </>

@@ -1,7 +1,8 @@
 import { useContext } from 'react'
 import { useOutletContext } from "react-router-dom"
 
-import { Sidebar, Main } from "../Layout"
+import { Main } from "../components/Main"
+import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 
 export const RecipiesView = () => {
