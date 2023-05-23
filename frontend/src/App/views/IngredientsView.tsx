@@ -8,7 +8,11 @@ import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 
 export const IngredientsView = () => {
-  const [ showSidebar, setShowSidebar, filters ] = useOutletContext() as [ boolean, React.Dispatch<React.SetStateAction<boolean>>, string[] ]
+  const [ 
+    showSidebar, 
+    //setShowSidebar, 
+    //filters 
+  ] = useOutletContext() as [ boolean, React.Dispatch<React.SetStateAction<boolean>>, string[] ]
 
   const ingredientsContext = useContext(DataContext).ingredients
   // const ingredientsContext = (() =>{
@@ -34,18 +38,24 @@ export const IngredientsView = () => {
         </flex-wrapper>
 
         <div className="ingredients-view__main__list-wrapper">
-          <div>name</div>
-          <div>hey</div>
-          <div>hey</div>
-          <div>hey</div>
-          {ingredientsContext.ingredientsList.map(ingredient => (
-            <div className='' key={ingredient.id}>
-              <p>{ingredient.name}</p>
-              <p>{ingredient.name}</p>
-              <p>{ingredient.name}</p>
-              <p>{ingredient.name}</p>
-            </div>
-          ))}
+
+          <div className="list-wrapper__grid-wrapper">
+
+            <div className='--grid-header'>name</div>
+            <div className='--grid-header'>unit</div>
+            <div className='--grid-header'>{"Energy/unit"}</div>
+            <div className='--grid-header'>{"Protein/unit"}</div>
+            <div className='--grid-header'>{"price/unit"}</div>
+            {ingredientsContext.ingredientsList.map(ingredient => (
+              <>
+                <p className='--grid-entries' key={ingredient.id + ingredient.name}>{ingredient.name}</p>
+                <p className='--grid-entries' key={ingredient.id + ingredient.unit}>{ingredient.unit}</p>
+                <p className='--grid-entries' key={ingredient.id + ingredient.energyPerUnit}>{ingredient.energyPerUnit}</p>
+                <p className='--grid-entries' key={ingredient.id + ingredient.proteinPerUnit}>{ingredient.proteinPerUnit}</p>
+                <p className='--grid-entries' key={ingredient.id + ingredient.pricePerUnit}>{ingredient.pricePerUnit}</p>
+              </>
+            ))}
+          </div>
         </div>
       </Main>
     </>
