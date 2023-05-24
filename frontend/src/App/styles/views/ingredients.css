@@ -16,6 +16,13 @@
 
 }
 
+.list-wrapper__table-element {
+  width: 100%;
+}
+
+
+
+/* 
 .list-wrapper__grid-wrapper {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -32,4 +39,5 @@
 
 .--grid-entries {
   border-bottom: 1px solid black;
-}
+} 
+*/
