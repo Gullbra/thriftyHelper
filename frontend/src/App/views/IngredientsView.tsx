@@ -6,28 +6,40 @@ import '../styles/views/ingredients.css'
 import { Main } from "../components/Main"
 import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
+import { capitalize } from '../util/capitalize'
+
+interface ISortingState {
+  activeSort: string,
+  possibleSort: string [],
+  activeOrder: string,
+  possibleOrder: string [],
+}
 
 export const IngredientsView = () => {
-  const [ 
-    showSidebar, 
-    //setShowSidebar, 
-  ] = useOutletContext() as [ boolean, React.Dispatch<React.SetStateAction<boolean>>, string[] ]
+  const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
+  const [ sortingState, setSortingState ] = useState<ISortingState>({
+    activeSort: "name",
+    possibleSort: [ "name", "unit", "energy/unit", "protein/unit", "price/unit" ],
+    activeOrder: "ascending",
+    possibleOrder: [ "ascending", "descending" ],
+  })
 
   const ingredientsContext = useContext(DataContext).ingredients
   const ingredientsListToShow = (() => {
-    if (categoryFilter.size > 0) {
-      return ingredientsContext.ingredientsList.filter(ingredient => {
-        for (let index = 0; index < ingredient.inCategories.length; index++)
-          if (categoryFilter.has(ingredient.inCategories[index]))
-            return true
-  
-        return false
-      })
-    }
+    if (categoryFilter.size === 0)
+      return ingredientsContext.ingredientsList
 
-    return ingredientsContext.ingredientsList
+    return ingredientsContext.ingredientsList.filter(ingredient => {
+      for (let index = 0; index < ingredient.inCategories.length; index++)
+        if (categoryFilter.has(ingredient.inCategories[index]))
+          return true
+
+      return false
+    })
   }) ()
+
+
 
   return(
     <>
@@ -42,8 +54,6 @@ export const IngredientsView = () => {
               categoryFilter.has(category)
                 ? newFilters.delete(category)
                 : newFilters.add(category)
-
-              console.log(newFilters)
 
               setCategoryFilter(newFilters);
             }}
@@ -61,6 +71,36 @@ export const IngredientsView = () => {
         </flex-wrapper>
 
         <div className="ingredients-view__main__list-wrapper">
+          <div className='ingredients-view__main__list-wrapper__sort-options-wrapper'>
+            <label htmlFor="sortDropDown">Sort by:</label>
+            <div className="box dropdown-container">
+              <p>{capitalize(sortingState.activeSort)}</p>
+              <menu className="dropdown-menu">
+                {sortingState.possibleSort.filter(option => option !== sortingState.activeSort).map(option => (
+                  <div key={option} className="dropdown-menu__menu-item"
+                    onClick={() => setSortingState((prev => {return {...prev, activeSort: option}}))}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </menu>
+            </div>
+
+            <label htmlFor="orderDropDown">Order:</label>
+            <div className="box dropdown-container">
+              <p>{capitalize(sortingState.activeOrder)}</p>
+              <menu className="dropdown-menu">
+                {sortingState.possibleOrder.filter(option => option !== sortingState.activeOrder).map(option => (
+                  <div key={option} className="dropdown-menu__menu-item"
+                    onClick={() => setSortingState((prev => {return {...prev, activeOrder: option}}))}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </menu>
+            </div>
+          </div>
+
           <table className="list-wrapper__table-element --dev-border">
             <thead>
               <tr>
@@ -88,31 +128,23 @@ export const IngredientsView = () => {
 
           </table>
         </div>
-
-        
-        {/* Redo as table */}
-        {/* <div className="ingredients-view__main__list-wrapper">
-          <div className="list-wrapper__grid-wrapper">
-            <div className='--grid-header'>name</div>
-            <div className='--grid-header'>unit</div>
-            <div className='--grid-header'>{"Energy/unit"}</div>
-            <div className='--grid-header'>{"Protein/unit"}</div>
-            <div className='--grid-header'>{"price/unit"}</div>
-            {ingredientsContext.ingredientsList.map(ingredient => (
-              <>
-                <p className='--grid-entries' key={ingredient.id + ingredient.name}>{ingredient.name}</p>
-                <p className='--grid-entries' key={ingredient.id + ingredient.unit}>{ingredient.unit}</p>
-                <p className='--grid-entries' key={ingredient.id + ingredient.energyPerUnit}>{ingredient.energyPerUnit}</p>
-                <p className='--grid-entries' key={ingredient.id + ingredient.proteinPerUnit}>{ingredient.proteinPerUnit}</p>
-                <p className='--grid-entries' key={ingredient.id + ingredient.pricePerUnit}>{ingredient.pricePerUnit}</p>
-              </>
-            ))}
-          </div>
-        </div> */}
-
-
-
       </Main>
     </>
   )
 }
+
+
+/*
+      <div className="box dropdown-container --prod-count">
+        <p>{`Showing ${productState.results.length} of ${productState.count} products`}</p>
+        <menu className="dropdown-menu">
+          <div>
+            <label htmlFor="setPageLimit">set pagelimit: </label>
+            <input 
+              type="number" id="setPageLimit" ref={limitInput}
+              defaultValue={pageState.limit} min={1} max={productState.count}/>
+            <button onClick={() => handlePageLimitChange()}>Apply</button>
+          </div>
+        </menu>
+      </div>
+*/
