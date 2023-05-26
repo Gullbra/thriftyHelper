@@ -12,6 +12,7 @@ import { IIngredientsContextData, IRecipiesContextData } from './util/interfaces
 let firstRender = true
 export const App = () => {
   const [ fetchedData, setFetchedData ] = useState<IDataContext>({} as IDataContext)
+  //const [ isLoadingData setIsLoadingData ] = useState<>
 
   useEffect (() => {
     if (firstRender === true) {

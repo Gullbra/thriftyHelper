@@ -12,30 +12,40 @@ export const IngredientsView = () => {
     showSidebar, 
     //setShowSidebar, 
   ] = useOutletContext() as [ boolean, React.Dispatch<React.SetStateAction<boolean>>, string[] ]
-  const [ categoryFilter, setCategoryFilter ] = useState<string[]>([])
+  const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
 
   const ingredientsContext = useContext(DataContext).ingredients
+  const ingredientsListToShow = (() => {
+    if (categoryFilter.size > 0) {
+      return ingredientsContext.ingredientsList.filter(ingredient => {
+        for (let index = 0; index < ingredient.inCategories.length; index++)
+          if (categoryFilter.has(ingredient.inCategories[index]))
+            return true
+  
+        return false
+      })
+    }
 
-  if (categoryFilter.length > 0) {
-    ingredientsContext.ingredientsList = ingredientsContext.ingredientsList.filter(ingredient => {
-      for (let index = 0; index < categoryFilter.length; index++) {
-        if (ingredient.inCategories.includes(categoryFilter[index])) {
-          return true
-        }
-      }
-      return false
-    })
-  }
+    return ingredientsContext.ingredientsList
+  }) ()
 
   return(
     <>
       <Sidebar showSidebar={showSidebar}>
         {ingredientsContext.categories.map(category => (
           <p 
-            className=''
+            className={`sidebar_ingredients-view__categories-toggle${categoryFilter.has(category) ? ' --sidebar-category-toggled': ''}`}
             key={category}
             onClick={() => {
-              console.log("click")
+              const newFilters = new Set(categoryFilter)
+
+              categoryFilter.has(category)
+                ? newFilters.delete(category)
+                : newFilters.add(category)
+
+              console.log(newFilters)
+
+              setCategoryFilter(newFilters);
             }}
           >
             {category}
@@ -49,8 +59,6 @@ export const IngredientsView = () => {
           {/* //! Auth protected? */}
           <h4>Add new Ingredient</h4>
         </flex-wrapper>
-
-
 
         <div className="ingredients-view__main__list-wrapper">
           <table className="list-wrapper__table-element --dev-border">
@@ -66,7 +74,7 @@ export const IngredientsView = () => {
 
             <tbody>
 
-              {ingredientsContext.ingredientsList.map(ingredient => (
+              {ingredientsListToShow.map(ingredient => (
                 <tr  key={ingredient.id}>
                   <td className='--grid-entries' key={ingredient.id + ingredient.name}>{ingredient.name}</td>
                   <td className='--grid-entries' key={ingredient.id + ingredient.unit}>{ingredient.unit}</td>

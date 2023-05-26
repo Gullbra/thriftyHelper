@@ -20,6 +20,12 @@
   width: 100%;
 }
 
+.sidebar_ingredients-view__categories-toggle{
+  cursor: pointer;
+}
+.--sidebar-category-toggled{
+  color: purple;
+}
 
 
 /* 
