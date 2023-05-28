@@ -7,6 +7,7 @@ import { Main } from "../components/Main"
 import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 import { capitalize } from '../util/capitalize'
+import { compareIngredients } from '../util/sorting'
 
 interface ISortingState {
   activeSort: string,
@@ -20,7 +21,7 @@ export const IngredientsView = () => {
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
   const [ sortingState, setSortingState ] = useState<ISortingState>({
     activeSort: "name",
-    possibleSort: [ "name", "unit", "energy/unit", "protein/unit", "price/unit" ],
+    possibleSort: [ "name", "unit", "price/unit", "energy/unit", "protein/unit" ],
     activeOrder: "ascending",
     possibleOrder: [ "ascending", "descending" ],
   })
@@ -28,7 +29,9 @@ export const IngredientsView = () => {
   const ingredientsContext = useContext(DataContext).ingredients
   const ingredientsListToShow = (() => {
     if (categoryFilter.size === 0)
-      return ingredientsContext.ingredientsList
+      return ingredientsContext.ingredientsList.sort((a, b) => compareIngredients(
+        a, b, sortingState.activeSort, sortingState.activeOrder === "ascending"
+      ))
 
     return ingredientsContext.ingredientsList.filter(ingredient => {
       for (let index = 0; index < ingredient.inCategories.length; index++)
@@ -36,10 +39,10 @@ export const IngredientsView = () => {
           return true
 
       return false
-    })
+    }).sort((a, b) => compareIngredients(
+      a, b, sortingState.activeSort, sortingState.activeOrder === "ascending"
+    ))
   }) ()
-
-
 
   return(
     <>
@@ -132,19 +135,3 @@ export const IngredientsView = () => {
     </>
   )
 }
-
-
-/*
-      <div className="box dropdown-container --prod-count">
-        <p>{`Showing ${productState.results.length} of ${productState.count} products`}</p>
-        <menu className="dropdown-menu">
-          <div>
-            <label htmlFor="setPageLimit">set pagelimit: </label>
-            <input 
-              type="number" id="setPageLimit" ref={limitInput}
-              defaultValue={pageState.limit} min={1} max={productState.count}/>
-            <button onClick={() => handlePageLimitChange()}>Apply</button>
-          </div>
-        </menu>
-      </div>
-*/

@@ -35,6 +35,206 @@
       "inCategories": [
         "fruit"
       ]
+    },
+    {
+      "id": 4,
+      "name": "Milk",
+      "unit": "liter",
+      "pricePerUnit": 1.2,
+      "energyPerUnit": 42,
+      "proteinPerUnit": 3.4,
+      "lastUpdated": "2023-05-28",
+      "inCategories": ["Dairy", "White"]
+    },
+    {
+      "id": 5,
+      "name": "Cheese",
+      "unit": "gram",
+      "pricePerUnit": 0.02,
+      "energyPerUnit": 402,
+      "proteinPerUnit": 25,
+      "lastUpdated": "2023-05-27",
+      "inCategories": ["Dairy", "Yellow"]
+    },
+    {
+      "id": 6,
+      "name": "Bread",
+      "unit": "slice",
+      "pricePerUnit": 0.1,
+      "energyPerUnit": 66,
+      "proteinPerUnit": 2.7,
+      "lastUpdated": "2023-05-28",
+      "inCategories": ["Grain", "Brown"]
+    },
+    {
+      "id": 7,
+      "name": "Butter",
+      "unit": "gram",
+      "pricePerUnit": 0.03,
+      "energyPerUnit": 717,
+      "proteinPerUnit": 0.9,
+      "lastUpdated": "2023-05-26",
+      "inCategories": ["Dairy", "Yellow"]
+    },
+    {
+      "id": 8,
+      "name": "Jam",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 278,
+      "proteinPerUnit": 0.4,
+      "lastUpdated": "2023-05-25",
+      "inCategories": ["Fruits", "Red"]
+    },
+    {
+      "id": 9,
+      "name": "Peanut Butter",
+      "unit": "gram",
+      "pricePerUnit": 0.02,
+      "energyPerUnit": 588,
+      "proteinPerUnit": 25.9,
+      "lastUpdated": "2023-05-24",
+      "inCategories": ["Nuts", "Brown"]
+    },
+    {
+      "id": 10,
+      "name": "Honey",
+      "unit": "gram",
+      "pricePerUnit": 0.03,
+      "energyPerUnit": 304,
+      "proteinPerUnit": 0.3,
+      "lastUpdated": "2023-05-23",
+      "inCategories": ["Sweet", "Yellow"]
+    },
+    {
+      "id": 11,
+      "name": "Yogurt",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 59,
+      "proteinPerUnit": 3.5,
+      "lastUpdated": "2023-05-22",
+      "inCategories": ["Dairy", "White"]
+    },
+    {
+      "id": 12,
+      "name": "Granola",
+      "unit": "gram",
+      "pricePerUnit": 0.02,
+      "energyPerUnit": 471,
+      "proteinPerUnit": 8.9,
+      "lastUpdated": "2023-05-21",
+      "inCategories": ["Grain", "Nuts", "Brown"]
+    },
+    {
+      "id": 13,
+      "name": "Orange Juice",
+      "unit": "ml",
+      "pricePerUnit": 0.005,
+      "energyPerUnit": 45,
+      "proteinPerUnit": 0.7,
+      "lastUpdated": "2023-05-20",
+      "inCategories": ["Fruits", "Orange"]
+    },
+    {
+      "id": 14,
+      "name": "Coffee",
+      "unit": "ml",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 1,
+      "proteinPerUnit": 0.1,
+      "lastUpdated": "2023-05-19",
+      "inCategories": ["Beverage", "Brown"]
+    },
+    {
+      "id": 15,
+      "name": "Tea",
+      "unit": "ml",
+      "pricePerUnit": 0.005,
+      "energyPerUnit": 1,
+      "proteinPerUnit": 0.1,
+      "lastUpdated": "2023-05-18",
+      "inCategories": ["Beverage", "Green"]
+    },
+    {
+      "id": 16,
+      "name": "Water",
+      "unit": "ml",
+      "pricePerUnit": 0.001,
+      "energyPerUnit": 0,
+      "proteinPerUnit": 0,
+      "lastUpdated": "2023-05-17",
+      "inCategories": ["Beverage", "Clear"]
+    },
+    {
+      "id": 17,
+      "name": "Salad",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 15,
+      "proteinPerUnit": 0.8,
+      "lastUpdated": "2023-05-16",
+      "inCategories": ["Vegetables", "Green"]
+    },
+    {
+      "id": 18,
+      "name": "Tomato",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 18,
+      "proteinPerUnit": 0.9,
+      "lastUpdated": "2023-05-15",
+      "inCategories": ["Vegetables", "Fruits", "Red"]
+    },
+    {
+      "id": 19,
+      "name": "Cucumber",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 15,
+      "proteinPerUnit": 0.7,
+      "lastUpdated": "2023-05-14",
+      "inCategories": ["Vegetables", "Green"]
+    },
+    {
+      "id": 20,
+      "name": "Carrot",
+      "unit": "gram",
+      "pricePerUnit": 0.01,
+      "energyPerUnit": 41,
+      "proteinPerUnit": 0.9,
+      "lastUpdated": "2023-05-13",
+      "inCategories": ["Vegetables", "Orange"]
+    },
+    {
+      "id": 21,
+      "name": "Chicken",
+      "unit": "gram",
+      "pricePerUnit": 0.02,
+      "energyPerUnit": 239,
+      "proteinPerUnit": 27.3,
+      "lastUpdated": "2023-05-12",
+      "inCategories": ["Meat", "Protein", "White"]
+    },
+    {
+      "id": 22,
+      "name": "Beef",
+      "unit": "gram",
+      "pricePerUnit": 0.03,
+      "energyPerUnit": 250,
+      "proteinPerUnit": 26.4,
+      "lastUpdated": "2023-05-11",
+      "inCategories": ["Meat", "Protein", "Red"]
+    },
+    {
+      "id": 23,
+      "name": "Fish",
+      "unit": "gram",
+      "pricePerUnit": 0.04,
+      "energyPerUnit": 206,
+      "proteinPerUnit": 22.3,
+      "lastUpdated": "2023-05-10",
+      "inCategories": ["Seafood", "Protein", "White"]
     }
   ],
   "categories": [
