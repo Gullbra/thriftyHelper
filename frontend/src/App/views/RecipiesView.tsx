@@ -6,7 +6,7 @@ import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 
 export const RecipiesView = () => {
-  const [ showSidebar, setShowSidebar ] = useOutletContext() as [ boolean, React.Dispatch<React.SetStateAction<boolean>> ]
+  const [ showSidebar, /* setShowSidebar */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */]
 
   const recipiesContext = useContext(DataContext).recipies
 

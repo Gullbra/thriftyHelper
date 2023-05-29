@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useOutletContext } from "react-router-dom"
 
 import '../styles/views/ingredients.css'
@@ -7,17 +7,14 @@ import { Main } from "../components/Main"
 import { Sidebar } from "../components/Sidebar"
 import { DataContext } from '../util/context'
 import { capitalize } from '../util/capitalize'
-import { compareIngredients } from '../util/sorting'
-
-interface ISortingState {
-  activeSort: string,
-  possibleSort: string [],
-  activeOrder: string,
-  possibleOrder: string [],
-}
+import { ingredientsSort } from '../util/sorting'
+import { IIngredient, ISortingState } from '../util/interfaces'
 
 export const IngredientsView = () => {
+  const ingredientsContext = useContext(DataContext).ingredients
+
   const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
+  const [ ingredientsToShow, setIngredientsToShow ] = useState<IIngredient[]>(ingredientsContext.ingredientsList)
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
   const [ sortingState, setSortingState ] = useState<ISortingState>({
     activeSort: "name",
@@ -26,23 +23,26 @@ export const IngredientsView = () => {
     possibleOrder: [ "ascending", "descending" ],
   })
 
-  const ingredientsContext = useContext(DataContext).ingredients
-  const ingredientsListToShow = (() => {
-    if (categoryFilter.size === 0)
-      return ingredientsContext.ingredientsList.sort((a, b) => compareIngredients(
-        a, b, sortingState.activeSort, sortingState.activeOrder === "ascending"
-      ))
+  useEffect(() => {
+    const filteredIngredients = categoryFilter.size === 0
+      ? ingredientsContext.ingredientsList
+      : ingredientsContext.ingredientsList.filter(ingredient => {
+          for (let index = 0; index < ingredient.inCategories.length; index++)
+            if (categoryFilter.has(ingredient.inCategories[index]))
+              return true
+    
+          return false
+        })
+      
+    const sortedIngredients = filteredIngredients.sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending"))
 
-    return ingredientsContext.ingredientsList.filter(ingredient => {
-      for (let index = 0; index < ingredient.inCategories.length; index++)
-        if (categoryFilter.has(ingredient.inCategories[index]))
-          return true
+    setIngredientsToShow(sortedIngredients)
+    // eslint-disable-next-line
+  }, [categoryFilter])
 
-      return false
-    }).sort((a, b) => compareIngredients(
-      a, b, sortingState.activeSort, sortingState.activeOrder === "ascending"
-    ))
-  }) ()
+  useEffect(() => {
+    setIngredientsToShow(prev => prev.slice().sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending")))
+  }, [sortingState])
 
   return(
     <>
@@ -117,8 +117,7 @@ export const IngredientsView = () => {
             </thead>
 
             <tbody>
-
-              {ingredientsListToShow.map(ingredient => (
+              {ingredientsToShow.map(ingredient => (
                 <tr key={ingredient.id}>
                   <td className='--grid-entries' >{ingredient.name}</td>
                   <td className='--grid-entries' >{ingredient.unit}</td>

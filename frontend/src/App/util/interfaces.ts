@@ -29,3 +29,10 @@ export interface IRecipiesContextData {
   recipiesList: IRecipy[],
   categories: string[]
 }
+
+export interface ISortingState {
+  activeSort: string,
+  possibleSort: string [],
+  activeOrder: string,
+  possibleOrder: string [],
+}
