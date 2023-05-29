@@ -13,7 +13,8 @@ import { IIngredient, ISortingState } from '../util/interfaces'
 interface IPaginationState {
   currentPage: number,
   maxPage: number,
-  pageLimit: number
+  pageLimit: number,
+  possibleLimits: number[]
 }
 
 export const IngredientsView = () => {
@@ -21,7 +22,7 @@ export const IngredientsView = () => {
 
   const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
   const [ ingredientsToShow, setIngredientsToShow ] = useState<IIngredient[]>(ingredientsContext.ingredientsList)
-  const [ paginationState, setPaginationState ] = useState<IPaginationState>({ currentPage: 1, maxPage: Math.ceil(ingredientsToShow.length / 15), pageLimit: 15 })
+  const [ paginationState, setPaginationState ] = useState<IPaginationState>({ currentPage: 1, maxPage: Math.ceil(ingredientsToShow.length / 15), pageLimit: 15, possibleLimits: [15, 20, 25, 50, 100] })
   const [ currentPageList, setCurrentPageList ] = useState<IIngredient[]>(ingredientsContext.ingredientsList.slice().splice(0, paginationState.pageLimit-1))
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
   const [ searchFilter, setSearchFilter ] = useState<string>('')
@@ -74,7 +75,7 @@ export const IngredientsView = () => {
         maxPage: newMaxpage 
       }})
     } // eslint-disable-next-line
-  }, [ingredientsToShow])
+  }, [ingredientsToShow, paginationState.pageLimit])
 
 
   useEffect(() => {
@@ -91,7 +92,7 @@ export const IngredientsView = () => {
             setSearchFilter(String(new FormData(event.currentTarget).get('searchTerm')))
           }}>
             <input type="text" className="search-form__input-field" name='searchTerm' placeholder='...search'/>
-            <button type='submit' className="search-form__button">serach icon</button>
+            <button type='submit' className="search-form__button">search icon</button>
           </form>
 
           {searchFilter.length > 0 && (
@@ -130,33 +131,53 @@ export const IngredientsView = () => {
         </flex-wrapper>
 
         <div className="ingredients-view__main__list-wrapper">
-          <div className='ingredients-view__main__list-wrapper__sort-options-wrapper'>
-            <label htmlFor="sortDropDown">Sort by:</label>
+          <div className="list-wrapper__options-bar">
             <div className="box dropdown-container">
-              <p>{capitalize(sortingState.activeSort)}</p>
+              <p>{`Showing ${currentPageList.length} of ${ingredientsToShow.length} ingredients`}</p>
               <menu className="dropdown-menu">
-                {sortingState.possibleSort.filter(option => option !== sortingState.activeSort).map(option => (
-                  <div key={option} className="dropdown-menu__menu-item"
-                    onClick={() => setSortingState((prev => {return {...prev, activeSort: option}}))}
-                  >
-                    {option}
-                  </div>
-                ))}
+                <div>
+                  <label htmlFor="setPageLimit">set pagelimit: </label>
+                  {/** change to this?: https://www.w3schools.com/tags/att_input_list.asp */}
+
+                  {paginationState.possibleLimits.filter(limit => limit !== paginationState.pageLimit).map(limit => (
+                    <div key={"pageLimOp" + limit} className="dropdown-menu__menu-item"
+                      onClick={() => setPaginationState((prev => {return {...prev, pageLimit: limit}}))}
+                    >
+                      {limit}
+                    </div>
+                  ))}
+                </div>
               </menu>
             </div>
+            
+            <div className='ingredients-view__main__list-wrapper__sort-options-wrapper'>
+              <label htmlFor="sortDropDown">Sort by:</label>
+              <div className="box dropdown-container">
+                <p>{capitalize(sortingState.activeSort)}</p>
+                <menu className="dropdown-menu">
+                  {sortingState.possibleSort.filter(option => option !== sortingState.activeSort).map(option => (
+                    <div key={option} className="dropdown-menu__menu-item"
+                      onClick={() => setSortingState((prev => {return {...prev, activeSort: option}}))}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </menu>
+              </div>
 
-            <label htmlFor="orderDropDown">Order:</label>
-            <div className="box dropdown-container">
-              <p>{capitalize(sortingState.activeOrder)}</p>
-              <menu className="dropdown-menu">
-                {sortingState.possibleOrder.filter(option => option !== sortingState.activeOrder).map(option => (
-                  <div key={option} className="dropdown-menu__menu-item"
-                    onClick={() => setSortingState((prev => {return {...prev, activeOrder: option}}))}
-                  >
-                    {option}
-                  </div>
-                ))}
-              </menu>
+              <label htmlFor="orderDropDown">Order:</label>
+              <div className="box dropdown-container">
+                <p>{capitalize(sortingState.activeOrder)}</p>
+                <menu className="dropdown-menu">
+                  {sortingState.possibleOrder.filter(option => option !== sortingState.activeOrder).map(option => (
+                    <div key={option} className="dropdown-menu__menu-item"
+                      onClick={() => setSortingState((prev => {return {...prev, activeOrder: option}}))}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </menu>
+              </div>
             </div>
           </div>
 
@@ -187,9 +208,19 @@ export const IngredientsView = () => {
           </table>
 
           <div className="list-wrapper__pagination-wrapper">
-            {paginationState.currentPage > 1 && <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage - 1}})}>{"<"}</span>}
+            {paginationState.currentPage > 1 && (
+              <>
+                <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage - 1}})}>{"<"}</span>
+                <span>...</span>
+              </>
+            )}
             <span>{paginationState.currentPage}</span>
-            {paginationState.currentPage < paginationState.maxPage && <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage + 1}})}>{">"}</span>}
+            {paginationState.currentPage < paginationState.maxPage && (
+              <> 
+                <span>...</span>
+                <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage + 1}})}>{">"}</span>
+              </>
+            )}
           </div>
         </div>
       </Main>

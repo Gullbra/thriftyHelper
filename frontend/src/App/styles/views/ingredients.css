@@ -13,7 +13,6 @@
   width: var(--width-inner-content);
   background-color: white;
   flex-grow: 1;
-
 }
 
 .list-wrapper__table-element {
@@ -27,8 +26,17 @@
   color: purple;
 }
 
+/** Pagination buttons */
+.list-wrapper__pagination-wrapper {
+  margin-top: 1rem;
+
+  display: flex; justify-content: center; gap: 0.5rem;
+}
 
 /** Sorting: */
+.list-wrapper__options-bar {
+  display: flex; justify-content: space-between;
+}
 .ingredients-view__main__list-wrapper__sort-options-wrapper {
   display: flex;
   justify-content: flex-end;
