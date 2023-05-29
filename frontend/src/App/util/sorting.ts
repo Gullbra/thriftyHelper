@@ -13,6 +13,8 @@ export const compareIngredients = (ingredientA: IIngredient, ingredientB: IIngre
         return [ingredientA.energyPerUnit, ingredientB.energyPerUnit]
       case "protein/unit":
         return [ingredientA.proteinPerUnit, ingredientB.proteinPerUnit]
+      case "last updated":
+        return [new Date(ingredientA.lastUpdated).getTime(), new Date(ingredientB.lastUpdated).getTime()]
       default:
         return []
     }

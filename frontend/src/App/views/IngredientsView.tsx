@@ -21,7 +21,7 @@ export const IngredientsView = () => {
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
   const [ sortingState, setSortingState ] = useState<ISortingState>({
     activeSort: "name",
-    possibleSort: [ "name", "unit", "price/unit", "energy/unit", "protein/unit" ],
+    possibleSort: [ "name", "unit", "price/unit", "energy/unit", "protein/unit", "last updated" ],
     activeOrder: "ascending",
     possibleOrder: [ "ascending", "descending" ],
   })
@@ -112,23 +112,23 @@ export const IngredientsView = () => {
                 <th className='--grid-header'>{"Energy/unit"}</th>
                 <th className='--grid-header'>{"Protein/unit"}</th>
                 <th className='--grid-header'>{"price/unit"}</th>
+                <th className='--grid-header'>{"last updated"}</th>
               </tr>
             </thead>
 
             <tbody>
 
               {ingredientsListToShow.map(ingredient => (
-                <tr  key={ingredient.id}>
-                  <td className='--grid-entries' key={ingredient.id + ingredient.name}>{ingredient.name}</td>
-                  <td className='--grid-entries' key={ingredient.id + ingredient.unit}>{ingredient.unit}</td>
-                  <td className='--grid-entries' key={ingredient.id + ingredient.energyPerUnit}>{ingredient.energyPerUnit}</td>
-                  <td className='--grid-entries' key={ingredient.id + ingredient.proteinPerUnit}>{ingredient.proteinPerUnit}</td>
-                  <td className='--grid-entries' key={ingredient.id + ingredient.pricePerUnit}>{ingredient.pricePerUnit}</td>
+                <tr key={ingredient.id}>
+                  <td className='--grid-entries' >{ingredient.name}</td>
+                  <td className='--grid-entries' >{ingredient.unit}</td>
+                  <td className='--grid-entries' >{ingredient.energyPerUnit}</td>
+                  <td className='--grid-entries' >{ingredient.proteinPerUnit}</td>
+                  <td className='--grid-entries' >{ingredient.pricePerUnit}</td>
+                  <td className='--grid-entries' >{new Date(ingredient.lastUpdated).toISOString().split('T')[0]}</td>
                 </tr>
               ))}
             </tbody>
-
-
           </table>
         </div>
       </Main>
