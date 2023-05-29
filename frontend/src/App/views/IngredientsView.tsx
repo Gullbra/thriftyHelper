@@ -16,6 +16,7 @@ export const IngredientsView = () => {
   const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
   const [ ingredientsToShow, setIngredientsToShow ] = useState<IIngredient[]>(ingredientsContext.ingredientsList)
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
+  const [ searchFilter, setSearchFilter ] = useState<string>('')
   const [ sortingState, setSortingState ] = useState<ISortingState>({
     activeSort: "name",
     possibleSort: [ "name", "unit", "price/unit", "energy/unit", "protein/unit", "last updated" ],
@@ -24,7 +25,7 @@ export const IngredientsView = () => {
   })
 
   useEffect(() => {
-    const filteredIngredients = categoryFilter.size === 0
+    const categoryFilteredIngredients = categoryFilter.size === 0
       ? ingredientsContext.ingredientsList
       : ingredientsContext.ingredientsList.filter(ingredient => {
           for (let index = 0; index < ingredient.inCategories.length; index++)
@@ -33,12 +34,15 @@ export const IngredientsView = () => {
     
           return false
         })
-      
-    const sortedIngredients = filteredIngredients.sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending"))
 
-    setIngredientsToShow(sortedIngredients)
-    // eslint-disable-next-line
-  }, [categoryFilter])
+    const searchFilteredIngreients = searchFilter.length === 0
+      ? categoryFilteredIngredients
+      : categoryFilteredIngredients.filter(ingredient => new RegExp(searchFilter, 'i').test(ingredient.name))
+      
+    const sortedIngredients = searchFilteredIngreients.sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending"))
+
+    setIngredientsToShow(sortedIngredients) // eslint-disable-next-line
+  }, [categoryFilter, searchFilter])
 
   useEffect(() => {
     setIngredientsToShow(prev => prev.slice().sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending")))
@@ -47,6 +51,24 @@ export const IngredientsView = () => {
   return(
     <>
       <Sidebar showSidebar={showSidebar}>
+        <flex-wrapper className="sidebar-ingredientsview__searchfield-wrapper">
+          <form className='searchfield-wrapper__search-form' onSubmit={(event) => {
+            event.preventDefault()
+            setSearchFilter(String(new FormData(event.currentTarget).get('searchTerm')))
+          }}>
+            <input type="text" className="search-form__input-field" name='searchTerm' placeholder='...search'/>
+            <button type='submit' className="search-form__button">serach icon</button>
+          </form>
+
+          {searchFilter.length > 0 && (
+            <div className='--dev-border'
+              onClick={() => setSearchFilter('')}
+            >
+              {`search: ${searchFilter}  x`}
+            </div>
+          )}
+        </flex-wrapper>
+
         {ingredientsContext.categories.map(category => (
           <p 
             className={`sidebar_ingredients-view__categories-toggle${categoryFilter.has(category) ? ' --sidebar-category-toggled': ''}`}
