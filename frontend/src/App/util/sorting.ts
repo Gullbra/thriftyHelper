@@ -5,9 +5,9 @@ export const ingredientsSort = (compareBy: string, orderAscending: boolean): (in
     const compareValues: number[] | string [] = (() => {
       switch (compareBy) {
         case "name":
-          return [ingredientA.name, ingredientB.name]
+          return [ingredientA.name.toLowerCase(), ingredientB.name.toLowerCase()]
         case "unit":
-          return [ingredientA.unit, ingredientB.unit]
+          return [ingredientA.unit.toLowerCase(), ingredientB.unit.toLowerCase()]
         case "price/unit":
           return [ingredientA.pricePerUnit, ingredientB.pricePerUnit]
         case "energy/unit":

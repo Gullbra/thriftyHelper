@@ -10,11 +10,19 @@ import { capitalize } from '../util/capitalize'
 import { ingredientsSort } from '../util/sorting'
 import { IIngredient, ISortingState } from '../util/interfaces'
 
+interface IPaginationState {
+  currentPage: number,
+  maxPage: number,
+  pageLimit: number
+}
+
 export const IngredientsView = () => {
   const ingredientsContext = useContext(DataContext).ingredients
 
   const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
   const [ ingredientsToShow, setIngredientsToShow ] = useState<IIngredient[]>(ingredientsContext.ingredientsList)
+  const [ paginationState, setPaginationState ] = useState<IPaginationState>({ currentPage: 1, maxPage: Math.ceil(ingredientsToShow.length / 15), pageLimit: 15 })
+  const [ currentPageList, setCurrentPageList ] = useState<IIngredient[]>(ingredientsContext.ingredientsList.slice().splice(0, paginationState.pageLimit-1))
   const [ categoryFilter, setCategoryFilter ] = useState<Set<string>>(new Set())
   const [ searchFilter, setSearchFilter ] = useState<string>('')
   const [ sortingState, setSortingState ] = useState<ISortingState>({
@@ -23,6 +31,7 @@ export const IngredientsView = () => {
     activeOrder: "ascending",
     possibleOrder: [ "ascending", "descending" ],
   })
+
 
   useEffect(() => {
     const categoryFilteredIngredients = categoryFilter.size === 0
@@ -44,9 +53,34 @@ export const IngredientsView = () => {
     setIngredientsToShow(sortedIngredients) // eslint-disable-next-line
   }, [categoryFilter, searchFilter])
 
+
   useEffect(() => {
     setIngredientsToShow(prev => prev.slice().sort(ingredientsSort(sortingState.activeSort, sortingState.activeOrder === "ascending")))
   }, [sortingState])
+
+
+  useEffect(() => {
+    const newMaxpage = Math.ceil(ingredientsToShow.length / paginationState.pageLimit)
+
+    if (paginationState.currentPage > newMaxpage) {
+      setPaginationState(prev => {return{
+        ...prev, 
+        currentPage: 1, 
+        maxPage: newMaxpage 
+      }})
+    } else if (newMaxpage !== paginationState.maxPage) {
+      setPaginationState(prev => {return{
+        ...prev,
+        maxPage: newMaxpage 
+      }})
+    } // eslint-disable-next-line
+  }, [ingredientsToShow])
+
+
+  useEffect(() => {
+    setCurrentPageList(ingredientsToShow.slice().splice((paginationState.currentPage-1) * paginationState.pageLimit, paginationState.currentPage * paginationState.pageLimit))
+  }, [paginationState, ingredientsToShow])
+
 
   return(
     <>
@@ -139,7 +173,7 @@ export const IngredientsView = () => {
             </thead>
 
             <tbody>
-              {ingredientsToShow.map(ingredient => (
+              {currentPageList.map(ingredient => (
                 <tr key={ingredient.id}>
                   <td className='--grid-entries' >{ingredient.name}</td>
                   <td className='--grid-entries' >{ingredient.unit}</td>
@@ -151,6 +185,12 @@ export const IngredientsView = () => {
               ))}
             </tbody>
           </table>
+
+          <div className="list-wrapper__pagination-wrapper">
+            {paginationState.currentPage > 1 && <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage - 1}})}>{"<"}</span>}
+            <span>{paginationState.currentPage}</span>
+            {paginationState.currentPage < paginationState.maxPage && <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage + 1}})}>{">"}</span>}
+          </div>
         </div>
       </Main>
     </>
