@@ -1,51 +1,127 @@
+
 {
   "recipiesList": [
     {
       "id": 1,
-      "name": "A recipy",
-      "description": "This is a mock recipy",
+      "name": "name1",
+      "description": "description1",
       "ingredients": [
-        {
-          "id": 1, 
-          "quantity": 200
-        },
-        {
-          "id": 2, 
-          "quantity": 200
-        },
-        {
-          "id": 3, 
-          "quantity": 200
-        }
+        { "id": 1, "quantity": 2 },
+        { "id": 2, "quantity": 3 }
       ],
-      "inCategories": [
-        "mockCategory1",
-        "mockCategory2"
-      ]
+      "inCategories": ["category1", "category2"]
     },
     {
       "id": 2,
-      "name": "Another recipy",
-      "description": "This is another mock recipy",
+      "name": "name2",
+      "description": "description2",
       "ingredients": [
-        {
-          "id": 2, 
-          "quantity": 200
-        },
-        {
-          "id": 3, 
-          "quantity": 200
-        }
+        { "id": 3, "quantity": 4 },
+        { "id": 4, "quantity": 5 }
       ],
-      "inCategories": [
-        "mockCategory1",
-        "mockCategory3"
-      ]
+      "inCategories": ["category3", "category4"]
+    },
+    {
+      "id": 3,
+      "name": "name3",
+      "description": "description3",
+      "ingredients": [
+        { "id": 5, "quantity": 6 },
+        { "id": 6, "quantity": 7 }
+      ],
+      "inCategories": ["category5", "category6"]
+    },
+    {
+      "id": 4,
+      "name": "name4",
+      "description": "description4",
+      "ingredients": [
+        { "id": 7, "quantity": 8 },
+        { "id": 8, "quantity": 9 }
+      ],
+      "inCategories": ["category7", "category8"]
+    },
+    {
+      "id": 5,
+      "name": "name5",
+      "description": "description5",
+      "ingredients": [
+        { "id": 9, "quantity": 10 },
+        { "id": 10, "quantity": 11 }
+      ],
+      "inCategories": ["category9", "category10"]
+    },
+    {
+      "id": 6,
+      "name": "name6",
+      "description": "description6",
+      "ingredients": [
+        { "id": 11, "quantity": 12 },
+        { "id": 13, "quantity": 14 }
+      ],
+      "inCategories": ["category11", "category12"]
+    },
+    {
+      "id": 7,
+      "name": "name7",
+      "description": "description7",
+      "ingredients": [
+        { "id": 15, "quantity": 16 },
+        { "id": 17, "quantity": 18 }
+      ],
+      "inCategories": ["category13", "category14"]
+    },
+    {
+      "id": 8,
+      "name": "name8",
+      "description": "description8",
+      "ingredients": [
+        { "id": 19, "quantity": 20 },
+        { "id": 21, "quantity": 22 }
+      ],
+      "inCategories": ["category15", "category16"]
+    },
+    {
+      "id": 9,
+      "name":"name9",
+      "description":"description9",
+      "ingredients":[
+        { "id":"23" , "quantity":"24" },
+        { "id":"25" , "quantity":"26" }
+      ],
+      "inCategories":["category17","category18"]
+    },
+    {
+      "id":"10",
+      "name":"name10",
+      "description":"description10",
+      "ingredients":[
+        { "id":"27", "quantity":"28" },
+        { "id":"29", "quantity":"30" }
+      ],
+      "inCategories":["category19","category20"]
     }
   ],
   "categories": [
-    "mockCategory1",
-    "mockCategory2",
-    "mockCategory3"
+    "category1",
+    "category2",
+    "category3",
+    "category4",
+    "category5",
+    "category6",
+    "category7",
+    "category8",
+    "category9",
+    "category10",
+    "category11",
+    "category12",
+    "category13",
+    "category14",
+    "category15",
+    "category16",
+    "category17",
+    "category18",
+    "category19",
+    "category20"
   ]
 }
