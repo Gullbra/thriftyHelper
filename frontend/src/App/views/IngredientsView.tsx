@@ -86,146 +86,175 @@ export const IngredientsView = () => {
   return(
     <>
       <Sidebar showSidebar={showSidebar}>
-        <flex-wrapper className="sidebar-ingredientsview__searchfield-wrapper">
-          <form className='searchfield-wrapper__search-form' onSubmit={(event) => {
-            event.preventDefault()
-            setSearchFilter(String(new FormData(event.currentTarget).get('searchTerm')))
-          }}>
-            <input type="text" className="search-form__input-field" name='searchTerm' placeholder='...search'/>
-            <button type='submit' className="search-form__button">search icon</button>
-          </form>
-
-          {searchFilter.length > 0 && (
-            <div className='--dev-border'
-              onClick={() => setSearchFilter('')}
-            >
-              {`search: ${searchFilter}  x`}
-            </div>
-          )}
-        </flex-wrapper>
-
-        {ingredientsContext.categories.map(category => (
-          <p 
-            className={`sidebar_ingredients-view__categories-toggle${categoryFilter.has(category) ? ' --sidebar-category-toggled': ''}`}
-            key={category}
-            onClick={() => {
-              const newFilters = new Set(categoryFilter)
-
-              categoryFilter.has(category)
-                ? newFilters.delete(category)
-                : newFilters.add(category)
-
-              setCategoryFilter(newFilters);
-            }}
-          >
-            {category}
-          </p>
-        ))}
+        <SidebarSearch searchFilter={searchFilter} setSearchFilter={setSearchFilter} />
+        <CategoriesList categoriesArray={ingredientsContext.categories} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} />
       </Sidebar>
 
       <Main showSidebar={showSidebar}>
-        <flex-wrapper class='ingredient-view__main__mode-choice-container'>
-          <h4>Ingredients List</h4>
-          {/* //! Auth protected? */}
-          <h4>Add new Ingredient</h4>
-        </flex-wrapper>
+        <ModeOptions />
 
         <div className="ingredients-view__main__list-wrapper">
-          <div className="list-wrapper__options-bar">
-            <div className="box dropdown-container">
-              <p>{`Showing ${currentPageList.length} of ${ingredientsToShow.length} ingredients`}</p>
-              <menu className="dropdown-menu">
-                <div>
-                  <label htmlFor="setPageLimit">set pagelimit: </label>
-                  {/** change to this?: https://www.w3schools.com/tags/att_input_list.asp */}
+          <Optionsbar currentPageList={currentPageList} ingredientsToShow={ingredientsToShow} paginationState={paginationState} setPaginationState={setPaginationState} sortingState={sortingState} setSortingState={setSortingState}/>
 
-                  {paginationState.possibleLimits.filter(limit => limit !== paginationState.pageLimit).map(limit => (
-                    <div key={"pageLimOp" + limit} className="dropdown-menu__menu-item"
-                      onClick={() => setPaginationState((prev => {return {...prev, pageLimit: limit}}))}
-                    >
-                      {limit}
-                    </div>
-                  ))}
-                </div>
-              </menu>
-            </div>
-            
-            <div className='ingredients-view__main__list-wrapper__sort-options-wrapper'>
-              <label htmlFor="sortDropDown">Sort by:</label>
-              <div className="box dropdown-container">
-                <p>{capitalize(sortingState.activeSort)}</p>
-                <menu className="dropdown-menu">
-                  {sortingState.possibleSort.filter(option => option !== sortingState.activeSort).map(option => (
-                    <div key={option} className="dropdown-menu__menu-item"
-                      onClick={() => setSortingState((prev => {return {...prev, activeSort: option}}))}
-                    >
-                      {option}
-                    </div>
-                  ))}
-                </menu>
-              </div>
-
-              <label htmlFor="orderDropDown">Order:</label>
-              <div className="box dropdown-container">
-                <p>{capitalize(sortingState.activeOrder)}</p>
-                <menu className="dropdown-menu">
-                  {sortingState.possibleOrder.filter(option => option !== sortingState.activeOrder).map(option => (
-                    <div key={option} className="dropdown-menu__menu-item"
-                      onClick={() => setSortingState((prev => {return {...prev, activeOrder: option}}))}
-                    >
-                      {option}
-                    </div>
-                  ))}
-                </menu>
-              </div>
-            </div>
-          </div>
-
-          <table className="list-wrapper__table-element --dev-border">
-            <thead>
-              <tr>
-                {['name', "unit", "energy/unit", "protein/unit", "price/unit", "last updated"].map(colHeader => (
-                  <th className='--grid-header'
-                    key={`col-header ${colHeader}`}
-                    onClick={() => setSortingState((prev => {return {...prev, activeSort: colHeader}}))}
-                  >
-                    {colHeader}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {currentPageList.map(ingredient => (
-                <tr key={ingredient.id}>
-                  <td className='--grid-entries' >{ingredient.name}</td>
-                  <td className='--grid-entries' >{ingredient.unit}</td>
-                  <td className='--grid-entries' >{ingredient.energyPerUnit}</td>
-                  <td className='--grid-entries' >{ingredient.proteinPerUnit}</td>
-                  <td className='--grid-entries' >{ingredient.pricePerUnit}</td>
-                  <td className='--grid-entries' >{new Date(ingredient.lastUpdated).toISOString().split('T')[0]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="list-wrapper__pagination-wrapper">
-            {paginationState.currentPage > 1 && (
-              <>
-                <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage - 1}})}>{"<"}</span>
-                <span>...</span>
-              </>
-            )}
-            <span>{paginationState.currentPage}</span>
-            {paginationState.currentPage < paginationState.maxPage && (
-              <> 
-                <span>...</span>
-                <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage + 1}})}>{">"}</span>
-              </>
-            )}
-          </div>
+          <TableAndPaginationButtons currentPageList={currentPageList} setSortingState={setSortingState} paginationState={paginationState} setPaginationState={setPaginationState}/>
         </div>
       </Main>
     </>
   )
 }
+
+const SidebarSearch = ({searchFilter, setSearchFilter}: {searchFilter: string, setSearchFilter: React.Dispatch<React.SetStateAction<string>>}) => (
+  <flex-wrapper className="sidebar-ingredientsview__searchfield-wrapper">
+    <form className='searchfield-wrapper__search-form' onSubmit={(event) => {
+      event.preventDefault()
+      setSearchFilter(String(new FormData(event.currentTarget).get('searchTerm')))
+    }}>
+      <input type="text" className="search-form__input-field" name='searchTerm' placeholder='...search'/>
+      <button type='submit' className="search-form__button">search icon</button>
+    </form>
+
+    {searchFilter.length > 0 && (
+      <div className='--dev-border'
+        onClick={() => setSearchFilter('')}
+      >
+        {`search: ${searchFilter}  x`}
+      </div>
+    )}
+  </flex-wrapper>
+)
+
+const ModeOptions = () => (
+  <flex-wrapper class='ingredient-view__main__mode-choice-container'>
+    <h4>Ingredients List</h4>
+    {/* //! Auth protected? */}
+    <h4>Add new Ingredient</h4>
+  </flex-wrapper>
+)
+
+const CategoriesList = ({categoriesArray, categoryFilter, setCategoryFilter}: {categoriesArray: string[], categoryFilter: Set<string>, setCategoryFilter: React.Dispatch<React.SetStateAction<Set<string>>>}) => (
+  <>
+    {categoriesArray.map(category => (
+      <p 
+        className={`sidebar_ingredients-view__categories-toggle${categoryFilter.has(category) ? ' --sidebar-category-toggled': ''}`}
+        key={category}
+        onClick={() => {
+          const newFilters = new Set(categoryFilter)
+
+          categoryFilter.has(category)
+            ? newFilters.delete(category)
+            : newFilters.add(category)
+
+          setCategoryFilter(newFilters);
+        }}
+      >
+        {category}
+      </p>
+    ))}
+  </>
+)
+
+const Optionsbar = (
+  {currentPageList, ingredientsToShow, paginationState, setPaginationState, sortingState, setSortingState}:
+  {currentPageList: IIngredient[], ingredientsToShow: IIngredient[], paginationState: IPaginationState, setPaginationState: React.Dispatch<React.SetStateAction<IPaginationState>>, sortingState: ISortingState, setSortingState: React.Dispatch<React.SetStateAction<ISortingState>>}
+) => (
+  <div className="list-wrapper__options-bar">
+    <div className="box dropdown-container">
+      <p>{`Showing ${currentPageList.length} of ${ingredientsToShow.length} ingredients`}</p>
+      <menu className="dropdown-menu">
+        <div>
+          <label htmlFor="setPageLimit">set pagelimit: </label>
+          {/** change to this?: https://www.w3schools.com/tags/att_input_list.asp */}
+
+          {paginationState.possibleLimits.filter(limit => limit !== paginationState.pageLimit).map(limit => (
+            <div key={"pageLimOp" + limit} className="dropdown-menu__menu-item"
+              onClick={() => setPaginationState((prev => {return {...prev, pageLimit: limit}}))}
+            >
+              {limit}
+            </div>
+          ))}
+        </div>
+      </menu>
+    </div>
+    
+    <div className='ingredients-view__main__list-wrapper__sort-options-wrapper'>
+      <label htmlFor="sortDropDown">Sort by:</label>
+      <div className="box dropdown-container">
+        <p>{capitalize(sortingState.activeSort)}</p>
+        <menu className="dropdown-menu">
+          {sortingState.possibleSort.filter(option => option !== sortingState.activeSort).map(option => (
+            <div key={option} className="dropdown-menu__menu-item"
+              onClick={() => setSortingState((prev => {return {...prev, activeSort: option}}))}
+            >
+              {option}
+            </div>
+          ))}
+        </menu>
+      </div>
+
+      <label htmlFor="orderDropDown">Order:</label>
+      <div className="box dropdown-container">
+        <p>{capitalize(sortingState.activeOrder)}</p>
+        <menu className="dropdown-menu">
+          {sortingState.possibleOrder.filter(option => option !== sortingState.activeOrder).map(option => (
+            <div key={option} className="dropdown-menu__menu-item"
+              onClick={() => setSortingState((prev => {return {...prev, activeOrder: option}}))}
+            >
+              {option}
+            </div>
+          ))}
+        </menu>
+      </div>
+    </div>
+  </div>
+)
+
+const TableAndPaginationButtons = (
+  {currentPageList, setSortingState, paginationState, setPaginationState}:
+  {currentPageList: IIngredient[], setSortingState: React.Dispatch<React.SetStateAction<ISortingState>>, paginationState: IPaginationState, setPaginationState: React.Dispatch<React.SetStateAction<IPaginationState>>}
+) => (
+  <>
+    <table className="list-wrapper__table-element --dev-border">
+      <thead>
+        <tr>
+          {['name', "unit", "energy/unit", "protein/unit", "price/unit", "last updated"].map(colHeader => (
+            <th className='--grid-header'
+              key={`col-header ${colHeader}`}
+              onClick={() => setSortingState((prev => {return {...prev, activeSort: colHeader}}))}
+            >
+              {colHeader}
+            </th>
+          ))}
+        </tr>
+      </thead>
+
+      <tbody>
+        {currentPageList.map(ingredient => (
+          <tr key={ingredient.id}>
+            <td className='--grid-entries' >{ingredient.name}</td>
+            <td className='--grid-entries' >{ingredient.unit}</td>
+            <td className='--grid-entries' >{ingredient.energyPerUnit}</td>
+            <td className='--grid-entries' >{ingredient.proteinPerUnit}</td>
+            <td className='--grid-entries' >{ingredient.pricePerUnit}</td>
+            <td className='--grid-entries' >{new Date(ingredient.lastUpdated).toISOString().split('T')[0]}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <div className="list-wrapper__pagination-wrapper">
+      {paginationState.currentPage > 1 && (
+        <>
+          <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage - 1}})}>{"<"}</span>
+          <span>...</span>
+        </>
+      )}
+      <span>{paginationState.currentPage}</span>
+      {paginationState.currentPage < paginationState.maxPage && (
+        <> 
+          <span>...</span>
+          <span onClick={() => setPaginationState(prev => {return {...prev, currentPage: prev.currentPage + 1}})}>{">"}</span>
+        </>
+      )}
+    </div>
+  </>
+)
