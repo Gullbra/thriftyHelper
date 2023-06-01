@@ -26,11 +26,12 @@
   color: purple;
 }
 
-/** Pagination buttons */
-.list-wrapper__pagination-wrapper {
-  margin-top: 1rem;
-
-  display: flex; justify-content: center; gap: 0.5rem;
+/** list mode select*/
+.mode-choice-container__choice-switch {
+  cursor: pointer;
+}
+.--selected-list-mode {
+  color: purple;
 }
 
 /** table */
@@ -38,6 +39,13 @@
   padding-bottom: 0.5rem;
   cursor: pointer;
   text-align: start;
+}
+
+/** Pagination buttons */
+.list-wrapper__pagination-wrapper {
+  margin-top: 1rem;
+
+  display: flex; justify-content: center; gap: 0.5rem;
 }
 
 /** Sorting: */

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useOutletContext } from "react-router-dom"
 
 import '../styles/views/ingredients.css'
@@ -21,6 +21,7 @@ export const IngredientsView = () => {
   const ingredientsContext = useContext(DataContext).ingredients
 
   const [ showSidebar, /* setShowSidebar, */ ] = useOutletContext() as [ boolean, /* React.Dispatch<React.SetStateAction<boolean>> */ ]
+  const [ viewMode, setViewMode ] = useState<string>("list")
   const [ ingredientsToShow, setIngredientsToShow ] = useState<IIngredient[]>(ingredientsContext.ingredientsList)
   const [ paginationState, setPaginationState ] = useState<IPaginationState>({ currentPage: 1, maxPage: Math.ceil(ingredientsToShow.length / 15), pageLimit: 15, possibleLimits: [15, 20, 25, 50, 100] })
   const [ currentPageList, setCurrentPageList ] = useState<IIngredient[]>(ingredientsContext.ingredientsList.slice().splice(0, paginationState.pageLimit-1))
@@ -91,13 +92,20 @@ export const IngredientsView = () => {
       </Sidebar>
 
       <Main showSidebar={showSidebar}>
-        <ModeOptions />
+        <ModeOptions viewMode={viewMode} setViewMode={setViewMode} />
 
-        <div className="ingredients-view__main__list-wrapper">
-          <Optionsbar currentPageList={currentPageList} ingredientsToShow={ingredientsToShow} paginationState={paginationState} setPaginationState={setPaginationState} sortingState={sortingState} setSortingState={setSortingState}/>
+        {viewMode === "list" && (
+          <div className="ingredients-view__main__list-wrapper">
+            <Optionsbar currentPageList={currentPageList} ingredientsToShow={ingredientsToShow} paginationState={paginationState} setPaginationState={setPaginationState} sortingState={sortingState} setSortingState={setSortingState}/>
+            <TableAndPaginationButtons currentPageList={currentPageList} setSortingState={setSortingState} paginationState={paginationState} setPaginationState={setPaginationState}/>
+          </div>
+        )}
 
-          <TableAndPaginationButtons currentPageList={currentPageList} setSortingState={setSortingState} paginationState={paginationState} setPaginationState={setPaginationState}/>
-        </div>
+        {viewMode === 'add new' && (
+          <div className="ingredients-view__main-add-new-wrapper">
+            <flex-wrapper><p>Not yet implemented</p></flex-wrapper>
+          </div>
+        )}
       </Main>
     </>
   )
@@ -123,11 +131,16 @@ const SidebarSearch = ({searchFilter, setSearchFilter}: {searchFilter: string, s
   </flex-wrapper>
 )
 
-const ModeOptions = () => (
+const ModeOptions = ({viewMode, setViewMode}: {viewMode: string, setViewMode: React.Dispatch<React.SetStateAction<string>>}) => (
   <flex-wrapper class='ingredient-view__main__mode-choice-container'>
-    <h4>Ingredients List</h4>
-    {/* //! Auth protected? */}
-    <h4>Add new Ingredient</h4>
+    <h4 className={`mode-choice-container__choice-switch${viewMode === 'list' ? ' --selected-list-mode': ''}`}
+      onClick={() => {if(viewMode !== 'list') {setViewMode('list')}}}
+    >Ingredients List</h4>
+
+
+    <h4 className={`mode-choice-container__choice-switch${viewMode === 'add new' ? ' --selected-list-mode': ''}`}
+      onClick={() => {if(viewMode !== 'add new') {setViewMode('add new')}}}    
+    >Add new Ingredient</h4>
   </flex-wrapper>
 )
 
