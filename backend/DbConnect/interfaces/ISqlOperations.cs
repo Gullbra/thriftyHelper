@@ -9,12 +9,15 @@ namespace DbConnect.interfaces;
 
 internal interface ISqlOperations
 {
-	List<Ingredient> getIngredientsList();
-	List<Recipy> getRecipyList();
+	List<Ingredient> GetIngredientsList();
+	List<Recipy> GetRecipyList();
 
 	Ingredient InsertNewIngredient(int id);
 	Recipy InsertNewRecipy(int id);
 
 	Ingredient UpdateIngredient(Ingredient ingredient);
 	Recipy UpdateRecipy(Recipy recipy);
+
+	Ingredient DeleteIngredient(int id);
+	Recipy DeleteRecipy(int id);
 }
