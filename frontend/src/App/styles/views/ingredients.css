@@ -33,6 +33,13 @@
   display: flex; justify-content: center; gap: 0.5rem;
 }
 
+/** table */
+.--grid-header {
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+  text-align: start;
+}
+
 /** Sorting: */
 .list-wrapper__options-bar {
   display: flex; justify-content: space-between;

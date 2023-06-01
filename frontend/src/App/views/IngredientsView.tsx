@@ -184,12 +184,14 @@ export const IngredientsView = () => {
           <table className="list-wrapper__table-element --dev-border">
             <thead>
               <tr>
-                <th className='--grid-header'>name</th>
-                <th className='--grid-header'>unit</th>
-                <th className='--grid-header'>{"Energy/unit"}</th>
-                <th className='--grid-header'>{"Protein/unit"}</th>
-                <th className='--grid-header'>{"price/unit"}</th>
-                <th className='--grid-header'>{"last updated"}</th>
+                {['name', "unit", "energy/unit", "protein/unit", "price/unit", "last updated"].map(colHeader => (
+                  <th className='--grid-header'
+                    key={`col-header ${colHeader}`}
+                    onClick={() => setSortingState((prev => {return {...prev, activeSort: colHeader}}))}
+                  >
+                    {colHeader}
+                  </th>
+                ))}
               </tr>
             </thead>
 
