@@ -98,9 +98,9 @@ ingredients_in_recepies
 //");
 
 var TestConLocal = new DevSqlOperations(true);
-var test = await TestConLocal.DevTestConnection();
+var test = await TestConLocal.DevSetUpTables();
 Console.WriteLine(
-test.Message
+	test.Message
 	);
 
 

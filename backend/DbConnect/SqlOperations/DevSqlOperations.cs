@@ -2,12 +2,6 @@
 using DbConnect.Responses;
 using DbConnect.Sql;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DbConnect.SqlOperations;
 
@@ -25,28 +19,54 @@ public class DevSqlOperations : IDevSqlOperations
 
 	public async Task<DevSqlResponse> DevTestConnection()
 	{
-		using var command = dbDataSource.CreateCommand(sqlStrings.DevTestConnection);
-		await using var reader = await command.ExecuteReaderAsync();
-
-		List<string> tablesInDb = new();
-		while (await reader.ReadAsync())
+		try
 		{
-			tablesInDb.Add(reader.GetString(0));
+			using var command = dbDataSource.CreateCommand(sqlStrings.DevTestConnection);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<string> tablesInDb = new();
+			while (await reader.ReadAsync())
+			{
+				tablesInDb.Add(reader.GetString(0));
+			}
+
+			return tablesInDb.Count == sqlStrings.TablesNamesList.Count
+				? new DevSqlResponse(true, "All tables present!")
+				: new DevSqlResponse(false, $"Missing tables: {String.Join(", ", sqlStrings.TablesNamesList.Where(tableName => !tablesInDb.Any(dbTable => dbTable == tableName)))}");
 		}
-
-		return tablesInDb.Count == sqlStrings.TablesNamesList.Count
-			? new DevSqlResponse(true, "All tables present!")
-			: new DevSqlResponse(false, $"Missing tables: {String.Join(", ", sqlStrings.TablesNamesList.Where(tableName => !tablesInDb.Any(dbTable => dbTable == tableName)))}");
+		catch (Exception ex)
+		{
+			return new DevSqlResponse(false, $"Error: {ex.Message}");
+		}
 	}
 
-	public void DevSetUpTables()
+	public async Task<DevSqlResponse> DevSetUpTables()
 	{
-		throw new NotImplementedException();
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.SetUpTables);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			return new DevSqlResponse(true, "Tables set upp!");
+		}
+		catch (Exception ex)
+		{
+			return new DevSqlResponse(false, $"Error: {ex.Message}");
+		}
 	}
 
-	public void DevTearDownTables()
+	public async Task<DevSqlResponse> DevTearDownTables()
 	{
-		throw new NotImplementedException();
-	}
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.DevDropTables);
+			await using var reader = await command.ExecuteReaderAsync();
 
+			return new DevSqlResponse(true, "Tables dropped!");
+		}
+		catch (Exception ex)
+		{
+			return new DevSqlResponse(false, $"Error: {ex.Message}");
+		}
+	}
 }

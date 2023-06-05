@@ -67,7 +67,7 @@ internal class DevSql
 			CREATE TABLE IF NOT EXISTS {ingredientCategories} (
 				ingredient_category_id	SERIAL			PRIMARY KEY,
 				category_name						VARCHAR(32)	NOT NULL,
-				UNIQUE(recipy_category_id, category_name)
+				UNIQUE(ingredient_category_id, category_name)
 			);
 
 			CREATE TABLE IF NOT EXISTS {categoriesInIngredients} (

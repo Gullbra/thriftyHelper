@@ -10,6 +10,6 @@ namespace DbConnect.interfaces;
 public interface IDevSqlOperations
 {
 	public Task<DevSqlResponse> DevTestConnection();
-	public void DevSetUpTables();
-	public void DevTearDownTables();
+	public Task<DevSqlResponse> DevSetUpTables();
+	public Task<DevSqlResponse> DevTearDownTables();
 }
