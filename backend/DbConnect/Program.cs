@@ -3,6 +3,7 @@ using System;
 using System.Data.SqlTypes;
 using ThriftyHelper.Backend.DbConnect;
 using ThriftyHelper.Backend.ClassLibrary;
+using DbConnect.SqlOperations;
 
 /*
  https://zetcode.com/csharp/postgresql/
@@ -77,25 +78,30 @@ ingredients_in_recepies
 // For testing through commandline:
 //SqlOperations.GetRecipy("blodpudding med ägg och bacon");
 
-var TestConLocal = new SqlOperations(true);
-// TestConLocal.TestConnection();
-// TestConLocal.SetUpDb();
-// TestConLocal.TestConnection();
-var retrievedData = TestConLocal.UpdateIngredient(new Ingredient(
-	4,
-	null,
-	"hey",
-	"g",
-	50,
-	200,
-	15,
-	null));
+//var TestConLocal = new SqlOperations(true);
+//// TestConLocal.TestConnection();
+//// TestConLocal.SetUpDb();
+//// TestConLocal.TestConnection();
+//var retrievedData = TestConLocal.UpdateIngredient(new Ingredient(
+//	4,
+//	null,
+//	"hey",
+//	"g",
+//	50,
+//	200,
+//	15,
+//	null));
 
-Console.WriteLine(@$"
-Id: {retrievedData.Id}
-Name: {retrievedData.Name}
-");
+//Console.WriteLine(@$"
+//Id: {retrievedData.Id}
+//Name: {retrievedData.Name}
+//");
 
+var TestConLocal = new DevSqlOperations(true);
+var test = await TestConLocal.DevTestConnection();
+Console.WriteLine(
+test.Message
+	);
 
 
 //foreach (var ingredient in retrievedData.Ingredients)

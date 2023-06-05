@@ -1,4 +1,4 @@
-using ThriftyHelper.Backend.DbConnect;
+using DbConnect.SqlOperations;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using DbConnect.SqlOperations;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ThriftyHelper.Backend.ClassLibrary;
-using ThriftyHelper.Backend.DbConnect;
 
 namespace ThriftyHelper.Backend.API.Controllers;
 

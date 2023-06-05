@@ -20,6 +20,8 @@ internal class DevSql
 		var ingredientCategories = dbLocal ? "stored_ingredient_categories" : "thrifty_helper__stored_ingredient_categories";
 		var categoriesInIngredients = dbLocal ? "categories_in_ingredients" : "thrifty_helper__categories_in_ingredients";
 
+		TablesNamesList = new() { recipyTableName, ingredientsTableName, ingredientsInRecipiesTableName, recipyCategories, categoriesInRecipies, ingredientCategories, categoriesInIngredients };
+
 		DevTestConnection = @$"
 			SELECT tablename 
 			FROM pg_catalog.pg_tables 
@@ -87,6 +89,7 @@ internal class DevSql
 				{recipyCategories};";
 	}
 
+	public List<string> TablesNamesList { get; }
 	public string DevTestConnection { get; }
 	public string SetUpTables { get; }
 	public string DevDropTables { get; }
