@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbConnect.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,15 +10,17 @@ namespace DbConnect.interfaces;
 
 internal interface ISqlOperations
 {
-	List<Ingredient> GetIngredientsList();
-	List<Recipy> GetRecipyList();
+	Task<SqlResponseListIngredients> GetIngredientsList();
+	//Task<List<Recipy>> GetRecipyList();
 
-	Ingredient InsertNewIngredient(int id);
-	Recipy InsertNewRecipy(int id);
+	Task<SqlResponseListCategories> GetCategoriesList(string type);
 
-	Ingredient UpdateIngredient(Ingredient ingredient);
-	Recipy UpdateRecipy(Recipy recipy);
+	//Task<SqlResponseSingleIngredient> InsertNewIngredient(int id);
+	//Task<Recipy> InsertNewRecipy(int id);
 
-	Ingredient DeleteIngredient(int id);
-	Recipy DeleteRecipy(int id);
+	//Task<SqlResponseSingleIngredient> UpdateIngredient(Ingredient ingredient);
+	//Task<Recipy> UpdateRecipy(Recipy recipy);
+
+	//Task<SqlResponseSingleIngredient> DeleteIngredient(int id);
+	//Task<Recipy> DeleteRecipy(int id);
 }

@@ -9,14 +9,14 @@ namespace ThriftyHelper.Backend.ClassLibrary;
 public class Ingredient
 {
 	public Ingredient(
-		int? id,
+		int id,
 		string name, 
 		string unit, 
 		double pricePerUnit,
 		double energyPerUnit, 
 		double proteinPerUnit, 
 		DateTime? dateTime,
-		string[] inCategories)
+		List<string> inCategories)
 
 	{
 		Id = id;
@@ -29,38 +29,13 @@ public class Ingredient
 		InCategories = inCategories;
 	}
 
-	public int? Id { get; set; }
+	public int Id { get; set; }
 	public string Name { get; set; }
 	public string Unit { get; set; }
 	public double PricePerUnit { get; set; }
 	public double EnergyPerUnit { get; set; }
 	public double ProteinPerUnit { get; set; }
 	public DateTime? LastUpdated { get; set; }
-	public string[] InCategories { get; private set; }
+	public List<string> InCategories { get; set; }
 }
 
-public class IngredientOld
-{
-	public IngredientOld(
-		int? id, double? quantity, string name, string unit,
-		double pricePerUnit, double energyPerUnit, double proteinPerUnit, DateTime? dateTime)
-	{
-		Id = id;
-		Name = name.ToLower();
-		Quantity = quantity;
-		Unit = unit.ToLower();
-		PricePerUnit = pricePerUnit;
-		EnergyPerUnit = energyPerUnit;
-		ProteinPerUnit = proteinPerUnit;
-		LastUpdated = dateTime;
-	}
-
-	public int? Id { get; set; }
-	public double? Quantity { get; set; }
-	public string Name { get; set; }
-	public string Unit { get; set; }
-	public double PricePerUnit { get; set; }
-	public double EnergyPerUnit { get; set; }
-	public double ProteinPerUnit { get; set; }
-	public DateTime? LastUpdated { get; set; }
-}

@@ -1,5 +1,9 @@
-﻿using Npgsql;
+﻿using DbConnect.interfaces;
+using DbConnect.Responses;
+using DbConnect.Sql;
+using Npgsql;
 using System.Data.Common;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using ThriftyHelper.Backend.ClassLibrary;
@@ -7,6 +11,48 @@ using ThriftyHelper.Backend.DbConnect;
 
 namespace DbConnect.SqlOperations;
 
+
+public class SqlOperations : ISqlOperations
+{
+	private readonly NpgsqlDataSource dbDataSource;
+	private readonly Sql.Sql sqlStrings;
+
+	public SqlOperations() : this(false) { }
+	public SqlOperations(bool devMode)
+	{
+		sqlStrings = new Sql.Sql(devMode);
+		dbDataSource = NpgsqlDataSource.Create(ConnStr.Get(devMode));
+	}
+
+	public async Task<SqlResponseListIngredients> GetIngredientsList()
+	{
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.GetIngredients);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Ingredient> ingredientsList = new();
+			while (await reader.ReadAsync())
+			{
+				ingredientsList.Add(new Ingredient(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					unit: reader.GetString(2),
+					pricePerUnit: reader.GetDouble(3),
+					energyPerUnit: reader.GetDouble(4),
+					proteinPerUnit: reader.GetDouble(5),
+					dateTime: reader.GetDateTime(6),
+					inCategories: new List<string>()));
+			}
+
+
+		}
+		catch(Exception ex)
+		{
+			return new SqlResponseListIngredients(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+		}
+	}
+}
 
 //public class SqlOperations
 //{
