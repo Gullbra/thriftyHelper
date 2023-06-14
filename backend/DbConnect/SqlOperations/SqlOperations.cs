@@ -45,7 +45,7 @@ public class SqlOperations : ISqlOperations
 					inCategories: new List<string>()));
 			}
 
-
+			return new SqlResponseListIngredients(true, ingredientsList, $"Success!");
 		}
 		catch(Exception ex)
 		{

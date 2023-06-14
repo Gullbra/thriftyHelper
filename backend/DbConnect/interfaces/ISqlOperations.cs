@@ -13,7 +13,7 @@ internal interface ISqlOperations
 	Task<SqlResponseListIngredients> GetIngredientsList();
 	//Task<List<Recipy>> GetRecipyList();
 
-	Task<SqlResponseListCategories> GetCategoriesList(string type);
+	//Task<SqlResponseListCategories> GetCategoriesList(string type);
 
 	//Task<SqlResponseSingleIngredient> InsertNewIngredient(int id);
 	//Task<Recipy> InsertNewRecipy(int id);

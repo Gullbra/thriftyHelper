@@ -13,10 +13,14 @@ internal class Sql
 		var ingredientsTableName = dbLocal ? "stored_ingredients" : "thrifty_helper__stored_ingredients";
 		var ingredientsInRecipiesTableName = dbLocal ? "ingredients_in_recipies" : "thrifty_helper__ingredients_in_recepies";
 
+		//GetIngredients = $@"
+		//	SELECT * 
+		//	FROM {ingredientsTableName};
+		//";
+
 		GetIngredients = $@"
-			SELECT * 
-			FROM {ingredientsTableName};
-		";
+			SELECT ing_t.*
+		;";
 
 		GetRecipies = $@"
 			SELECT st.*, ip.*, si.*

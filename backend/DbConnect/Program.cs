@@ -4,6 +4,7 @@ using System.Data.SqlTypes;
 using ThriftyHelper.Backend.DbConnect;
 using ThriftyHelper.Backend.ClassLibrary;
 using DbConnect.SqlOperations;
+using DbConnect.dbInit;
 
 /*
  https://zetcode.com/csharp/postgresql/
@@ -97,14 +98,34 @@ ingredients_in_recepies
 //Name: {retrievedData.Name}
 //");
 
-var TestConLocal = new DevSqlOperations(true);
-var test = await TestConLocal.DevSetUpTables();
-Console.WriteLine(
-	test.Message
-	);
+//var TestConLocal = new DevSqlOperations(true);
+//var test = await TestConLocal.DevSetUpTables();
+//Console.WriteLine(
+//	test.Message
+//	);
 
 
 //foreach (var ingredient in retrievedData.Ingredients)
 //{
 //	Console.WriteLine($"\t{ingredient.Name} - {ingredient.Quantity} {ingredient.Unit}");
 //}
+
+MockDataReader.Testing();
+
+var testing = await MockDataReader.GetIngredientsData();
+
+if(testing == null)
+{
+	Console.WriteLine("returned null!");
+}
+else if (testing.Categories == null)
+{
+	Console.WriteLine("returned objects properties == null");
+}
+else
+{
+	foreach (var cat in testing.Categories)
+	{
+		Console.WriteLine(cat);
+	}
+}
