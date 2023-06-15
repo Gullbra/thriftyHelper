@@ -12,4 +12,5 @@ public interface IDevSqlOperations
 	public Task<DevSqlResponse> DevTestConnection();
 	public Task<DevSqlResponse> DevSetUpTables();
 	public Task<DevSqlResponse> DevTearDownTables();
+	public Task<DevSqlResponse> DevReInitDb();
 }

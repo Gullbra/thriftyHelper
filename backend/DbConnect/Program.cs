@@ -110,11 +110,12 @@ ingredients_in_recepies
 //	Console.WriteLine($"\t{ingredient.Name} - {ingredient.Quantity} {ingredient.Unit}");
 //}
 
-MockDataReader.Testing();
 
-var testing = await MockDataReader.GetIngredientsData();
+//MockDataReader.CheckingPath();
 
-if(testing == null)
+var testing = await MockDataReader.GetRecipiesData();
+
+if (testing == null)
 {
 	Console.WriteLine("returned null!");
 }

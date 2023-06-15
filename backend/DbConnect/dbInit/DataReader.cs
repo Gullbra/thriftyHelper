@@ -14,7 +14,16 @@ namespace DbConnect.dbInit;
 public class IngredientsData
 {
 	[JsonPropertyName("ingredientsList")]
-	public List<TestIng>? IngredientsList { get; set; }
+	public List<IngredientFromJSON>? IngredientsList { get; set; }
+
+	[JsonPropertyName("categories")]
+	public List<string>? Categories { get; set; }
+}
+
+public class RecipiesData
+{
+	[JsonPropertyName("recipiesList")]
+	public List<RecipyFromJSON>? RecipiesList { get; set; }
 
 	[JsonPropertyName("categories")]
 	public List<string>? Categories { get; set; }
@@ -22,13 +31,12 @@ public class IngredientsData
 
 public class TestData
 {
-	//[property: JsonPropertyName("testArr")] List<string>? TestArr;
 	[JsonPropertyName("testArr")]
 	public List<string>? TestArr { get; set; }
 }
 
 
-public record class TestIng
+public record class IngredientFromJSON
 (
 	[property: JsonPropertyName("id")] int Id,
 	[property: JsonPropertyName("name")] string Name,
@@ -43,33 +51,39 @@ public record class TestIng
 	public DateTime LastUpdated => DateTime.Parse(LastUpdatedAsString);
 }
 
+public record class RecipyFromJSON
+(
+	[property: JsonPropertyName("id")] int Id,
+	[property: JsonPropertyName("name")] string Name,
+	[property: JsonPropertyName("description")] string Description,
+	[property: JsonPropertyName("ingredients")] List<RecipyIngredientList> Ingredients,
+	[property: JsonPropertyName("inCategories")] List<string> InCategories
+)
+{ }
+
+public record class RecipyIngredientList 
+(
+	[property: JsonPropertyName("id")] int Id,
+	[property: JsonPropertyName("quantity")] int Quantity
+)
+{ }
+
 
 public static class MockDataReader
 {
-	static readonly string ingredientsDataPath = Environment.CurrentDirectory + "\\mock\\ingredients.data.json";
-	static readonly string recipiesDataPath = Environment.CurrentDirectory + "\\mock\\recipies.data.json";
-	static readonly string testDataPath = "C:\\Users\\Martin\\Code\\repos\\thriftyHelper\\backend\\DbConnect\\mock\\test.json";
+	static readonly string basePath = String.Join("\\DbConnect\\", (System.Reflection.Assembly.GetEntryAssembly() ?? throw new Exception("Could not detirmine assembly path")).Location.Split("\\DbConnect\\").ToList().SkipLast(1)) + "\\DbConnect\\mock";
+	static readonly string ingredientsDataPath = basePath + "\\ingredients.data.json";
+	static readonly string recipiesDataPath = basePath + "\\recipies.data.json";
+	static readonly string testDataPath = basePath + "\\test.json";
 
-	public static async Task<IngredientsData> GetIngredientsData()
-	{
-		return await ReadAsync<IngredientsData>(ingredientsDataPath) ?? new IngredientsData();
-	}
-
-	public static async Task<TestData> GetTestArr()
-	{
-		var returnData = await ReadAsync<TestData>(testDataPath);
-		Console.WriteLine($"returned: { returnData.TestArr }");
-		return returnData;
-	}
-
-
-	public static async Task<T> ReadAsync<T>(string filePath)
+	private static async Task<T?> ReadAsync<T>(string filePath)
 	{
 		using FileStream stream = File.OpenRead(filePath);
-		var returnValue = await JsonSerializer.DeserializeAsync<T>(stream);
-		Console.WriteLine("Deserialized!");
-		return returnValue;
+		return await JsonSerializer.DeserializeAsync<T>(stream);
 	}
 
-	public static void Testing() => Console.WriteLine($"\ttesting:");
+	public static async Task<IngredientsData> GetIngredientsData() => await ReadAsync<IngredientsData>(ingredientsDataPath) ?? new IngredientsData();
+	public static async Task<RecipiesData> GetRecipiesData() => await ReadAsync<RecipiesData>(recipiesDataPath) ?? new RecipiesData();
+	public static async Task<TestData> GetTestArr() => await ReadAsync<TestData>(testDataPath) ?? new TestData();
+	public static void CheckingPath() => Console.WriteLine($"\tPath test: {basePath}");
 }
