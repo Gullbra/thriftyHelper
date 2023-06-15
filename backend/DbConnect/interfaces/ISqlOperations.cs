@@ -10,17 +10,17 @@ namespace DbConnect.interfaces;
 
 internal interface ISqlOperations
 {
-	Task<SqlResponseListIngredients> GetIngredientsList();
-	//Task<List<Recipy>> GetRecipyList();
+	Task<SqlResponse> GetIngredientsList();
+	//Task<SqlResponse> GetRecipyList();
 
-	//Task<SqlResponseListCategories> GetCategoriesList(string type);
+	//Task<SqlResponse> GetCategoriesList(string type);
 
-	//Task<SqlResponseSingleIngredient> InsertNewIngredient(int id);
-	//Task<Recipy> InsertNewRecipy(int id);
+	//Task<SqlResponse> InsertNewIngredient(int id);
+	//Task<SqlResponse> InsertNewRecipy(int id);
 
-	//Task<SqlResponseSingleIngredient> UpdateIngredient(Ingredient ingredient);
-	//Task<Recipy> UpdateRecipy(Recipy recipy);
+	//Task<SqlResponse> UpdateIngredient(Ingredient ingredient);
+	//Task<SqlResponse> UpdateRecipy(Recipy recipy);
 
-	//Task<SqlResponseSingleIngredient> DeleteIngredient(int id);
-	//Task<Recipy> DeleteRecipy(int id);
+	//Task<SqlResponse> DeleteIngredient(int id);
+	//Task<SqlResponse> DeleteRecipy(int id);
 }
