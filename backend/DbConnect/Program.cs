@@ -113,20 +113,23 @@ ingredients_in_recepies
 
 //MockDataReader.CheckingPath();
 
-var testing = await MockDataReader.GetRecipiesData();
+//var testing = await MockDataReader.GetRecipiesData();
 
-if (testing == null)
-{
-	Console.WriteLine("returned null!");
-}
-else if (testing.Categories == null)
-{
-	Console.WriteLine("returned objects properties == null");
-}
-else
-{
-	foreach (var cat in testing.Categories)
-	{
-		Console.WriteLine(cat);
-	}
-}
+//if (testing == null)
+//{
+//	Console.WriteLine("returned null!");
+//}
+//else if (testing.Categories == null)
+//{
+//	Console.WriteLine("returned objects properties == null");
+//}
+//else
+//{
+//	foreach (var cat in testing.Categories)
+//	{
+//		Console.WriteLine(cat);
+//	}
+//}
+
+var Test = new DevSqlOperations(true);
+await Test.DevReInitDb();

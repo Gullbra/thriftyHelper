@@ -10,8 +10,6 @@ using ThriftyHelper.Backend.ClassLibrary;
 using ThriftyHelper.Backend.DbConnect;
 
 namespace DbConnect.SqlOperations;
-
-
 public class SqlOperations : ISqlOperations
 {
 	private readonly NpgsqlDataSource dbDataSource;
@@ -24,7 +22,7 @@ public class SqlOperations : ISqlOperations
 		dbDataSource = NpgsqlDataSource.Create(ConnStr.Get(devMode));
 	}
 
-	public async Task<SqlResponseListIngredients> GetIngredientsList()
+	public async Task<SqlResponse> GetIngredientsList()
 	{
 		try
 		{
@@ -45,11 +43,11 @@ public class SqlOperations : ISqlOperations
 					inCategories: new List<string>()));
 			}
 
-			return new SqlResponseListIngredients(true, ingredientsList, $"Success!");
+			return new SqlResponse(true, ingredientsList, $"Success!");
 		}
 		catch(Exception ex)
 		{
-			return new SqlResponseListIngredients(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+			return new SqlResponse(false, new List<Ingredient>(), $"Error: ${ex.Message}");
 		}
 	}
 }
