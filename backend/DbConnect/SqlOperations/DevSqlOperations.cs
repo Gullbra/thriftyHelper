@@ -33,7 +33,7 @@ public class DevSqlOperations : IDevSqlOperations
 
 			return tablesInDb.Count == sqlStrings.TablesNamesList.Count
 				? new DevSqlResponse(true, "All tables present!")
-				: new DevSqlResponse(false, $"Missing tables: {String.Join(", ", sqlStrings.TablesNamesList.Where(tableName => !tablesInDb.Any(dbTable => dbTable == tableName)))}");
+				: new DevSqlResponse(false, $"Missing tables: {String.Join(", ", sqlStrings.TablesNamesList.Where(tableName => !tablesInDb.Any(dbTable => dbTable == tableName.Value)))}");
 		}
 		catch (Exception ex)
 		{
@@ -97,37 +97,121 @@ public class DevSqlOperations : IDevSqlOperations
 
 		try
 		{
+			/*
+			IngCategories
+
+			RecCategories
+			
+				foreach(Ingredients)
+				{
+					Ingredients
+					ingredientsInCategories
+				}
+
+				foreach(recipies)
+				{
+					Recipies
+					recipiesInCategories
+					ingredientsInRecipies
+				}
+
+			*/
+
 			foreach (var category in ingredientsData.Categories)
 			{
-				Console.WriteLine(category);
+				var conn = await dbDataSource.OpenConnectionAsync();
+
+				await using (var cmd = new NpgsqlCommand(
+					$@"
+						INSERT INTO {
+							sqlStrings.TablesNamesList
+								.Where(tableNameKvp => tableNameKvp.Key == "ingredientCategoryTable")
+								.ToList()[0].Value
+						}(
+							category_name
+						)
+						VALUES(
+							@c_n
+						)
+						ON CONFLICT DO NOTHING
+					;",
+					conn))
+				{
+					cmd.Parameters.AddWithValue("@c_n", category);
+					await cmd.ExecuteNonQueryAsync();
+				}
 			}
 			progressMessages.Add("ingredient categories");
 
+			foreach (var category in recipiesData.Categories)
+			{
+				var conn = await dbDataSource.OpenConnectionAsync();
+
+				await using (var cmd = new NpgsqlCommand(
+					$@"
+						INSERT INTO {sqlStrings.TablesNamesList
+								.Where(tableNameKvp => tableNameKvp.Key == "recipyCategoriesTable")
+								.ToList()[0].Value}(
+							category_name
+						)
+						VALUES(
+							@c_n
+						)
+						ON CONFLICT DO NOTHING
+					;",
+					conn))
+				{
+					cmd.Parameters.AddWithValue("@c_n", category);
+					await cmd.ExecuteNonQueryAsync();
+				}
+			}
+			progressMessages.Add("recipy categories");
+
 			foreach (var ingredient in ingredientsData.IngredientsList)
 			{
+				//await using (var cmd = new NpgsqlCommand(
+				//	$@"
+				//		INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredientsTable")}(
+				//			ingredient_name
+				//			ingredient_unit
+				//			price_per_unit
+				//			energy_per_unit
+				//			protein_per_unit
+				//		)
+				//		VALUES(
+				//			@i_n,
+				//			@i_u,
+				//			@prPU,
+				//			@ePU,
+				//			@pPU
+				//		)
+				//	;", 
+				//	conn))
+				//{
+				//	cmd.Parameters.AddWithValue("@i_n", category);
+				//	await cmd.ExecuteNonQueryAsync();
+				//}
+				/*
+				 * 
+				 
+				 */
 				Console.WriteLine(ingredient.Name);       
 			}
 			progressMessages.Add("ingredients");
 
-			foreach (var category in recipiesData.Categories)
-			{
-				Console.WriteLine(category);
-			}
-			progressMessages.Add("recipy categories");
-
-			foreach (var recipy in recipiesData.RecipiesList)
-			{
-				Console.WriteLine(recipy.Name);
-			}
-			progressMessages.Add("recipies");
+			//foreach (var recipy in recipiesData.RecipiesList)
+			//{
+			//	Console.WriteLine(recipy.Name);
+			//}
+			//progressMessages.Add("recipies");
 
 			return new DevSqlResponse(true, $"Created entries:\n{
 				ingredientsData.Categories.Count} ingredient categories\n{
 				ingredientsData.IngredientsList.Count} ingredients\n{
 				recipiesData.Categories.Count} recipy categories\n{
 				recipiesData.RecipiesList.Count} recipies");
-
-		} catch (Exception ex)
+		} 
+		catch (Exception ex)
 		{
 			var listOperationsNotCompleted = new List<string>() { 
 				"ingredient categories",

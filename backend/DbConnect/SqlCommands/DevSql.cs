@@ -8,13 +8,24 @@ internal class DevSql
 		var ingredientsTableName = dbLocal ? "stored_ingredients" : "thrifty_helper__stored_ingredients";
 		var ingredientsInRecipiesTableName = dbLocal ? "ingredients_in_recipies" : "thrifty_helper__ingredients_in_recepies";
 
-		var recipyCategories = dbLocal ? "stored_recipy_categories" : "thrifty_helper__stored_recipy_categories";
-		var categoriesInRecipies = dbLocal ? "categories_in_recipies" : "thrifty_helper__categories_in_recipies";
+		var recipyCategoriesTableName = dbLocal ? "stored_recipy_categories" : "thrifty_helper__stored_recipy_categories";
+		var categoriesInRecipiesTableName = dbLocal ? "categories_in_recipies" : "thrifty_helper__categories_in_recipies";
 
-		var ingredientCategories = dbLocal ? "stored_ingredient_categories" : "thrifty_helper__stored_ingredient_categories";
-		var categoriesInIngredients = dbLocal ? "categories_in_ingredients" : "thrifty_helper__categories_in_ingredients";
+		var ingredientCategoriesTableName = dbLocal ? "stored_ingredient_categories" : "thrifty_helper__stored_ingredient_categories";
+		var categoriesInIngredientsTableName = dbLocal ? "categories_in_ingredients" : "thrifty_helper__categories_in_ingredients";
 
-		TablesNamesList = new() { recipyTableName, ingredientsTableName, ingredientsInRecipiesTableName, recipyCategories, categoriesInRecipies, ingredientCategories, categoriesInIngredients };
+		TablesNamesList = new() 
+		{ 
+			new KeyValuePair<string, string>("recipyTable", recipyTableName),
+			new KeyValuePair<string, string>("ingredientsTable", ingredientsTableName),
+			new KeyValuePair<string, string>("ingredients in recipies", ingredientsInRecipiesTableName),
+
+			new KeyValuePair<string, string>("recipyCategoriesTable", recipyCategoriesTableName),
+			new KeyValuePair<string, string>("ingredientCategoryTable", ingredientCategoriesTableName),
+
+			new KeyValuePair<string, string>("categories in recipies", categoriesInRecipiesTableName),
+			new KeyValuePair<string, string>("ingredients in categories", categoriesInIngredientsTableName)
+		};
 
 		DevTestConnection = @$"
 			SELECT tablename 
@@ -46,27 +57,27 @@ internal class DevSql
 				quantity 					float(4)			NOT NULL	
 			);
 
-			CREATE TABLE IF NOT EXISTS {recipyCategories} (
+			CREATE TABLE IF NOT EXISTS {recipyCategoriesTableName} (
 				recipy_category_id	SERIAL			PRIMARY KEY,
 				category_name				VARCHAR(32)	NOT NULL,
 				UNIQUE(recipy_category_id, category_name)
 			);
 
-			CREATE TABLE IF NOT EXISTS {categoriesInRecipies} (
+			CREATE TABLE IF NOT EXISTS {categoriesInRecipiesTableName} (
 				recipy_id 					integer 			REFERENCES {recipyTableName} ON DELETE RESTRICT,
-				recipy_category_id	integer 			REFERENCES {recipyCategories} ON DELETE RESTRICT,
+				recipy_category_id	integer 			REFERENCES {recipyCategoriesTableName} ON DELETE RESTRICT,
 				PRIMARY KEY(recipy_id, recipy_category_id)
 			);
 
-			CREATE TABLE IF NOT EXISTS {ingredientCategories} (
+			CREATE TABLE IF NOT EXISTS {ingredientCategoriesTableName} (
 				ingredient_category_id	SERIAL			PRIMARY KEY,
 				category_name						VARCHAR(32)	NOT NULL,
 				UNIQUE(ingredient_category_id, category_name)
 			);
 
-			CREATE TABLE IF NOT EXISTS {categoriesInIngredients} (
+			CREATE TABLE IF NOT EXISTS {categoriesInIngredientsTableName} (
 				ingredient_id 					integer 			REFERENCES {ingredientsTableName} ON DELETE RESTRICT,
-				ingredient_category_id	integer 			REFERENCES {ingredientCategories} ON DELETE RESTRICT,
+				ingredient_category_id	integer 			REFERENCES {ingredientCategoriesTableName} ON DELETE RESTRICT,
 				PRIMARY KEY(ingredient_id, ingredient_category_id)
 			);";
 
@@ -76,15 +87,23 @@ internal class DevSql
 				{recipyTableName}, 
 				{ingredientsTableName}, 
 
-				{categoriesInIngredients},
-				{ingredientCategories},
+				{categoriesInIngredientsTableName},
+				{ingredientCategoriesTableName},
 
-				{categoriesInRecipies},
-				{recipyCategories};";
+				{categoriesInRecipiesTableName},
+				{recipyCategoriesTableName};";
+
+		DevInsertCategoryIng = $@"
+			INSERT INTO {ingredientCategoriesTableName}()
+			VALUES()		
+		"; 
+
 	}
 
-	public List<string> TablesNamesList { get; }
+	public List<KeyValuePair<string, string>> TablesNamesList { get; }
 	public string DevTestConnection { get; }
 	public string SetUpTables { get; }
 	public string DevDropTables { get; }
+	public string DevInsertCategoryIng { get; }
+
 }

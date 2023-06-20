@@ -132,4 +132,5 @@ ingredients_in_recepies
 //}
 
 var Test = new DevSqlOperations(true);
-await Test.DevReInitDb();
+var response = await Test.DevReInitDb();
+Console.WriteLine($"Success: {response.Success}, Message: {response.Message}");
