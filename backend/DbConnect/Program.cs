@@ -132,5 +132,7 @@ ingredients_in_recepies
 //}
 
 var Test = new DevSqlOperations(true);
+var responesTear = await Test.DevTearDownTables(); Console.WriteLine($"Tables droped: {responesTear.Success}");
+var resposeBuild = await Test.DevSetUpTables(); Console.WriteLine($"Tables build: {resposeBuild.Success}");
 var response = await Test.DevReInitDb();
 Console.WriteLine($"Success: {response.Success}, Message: {response.Message}");

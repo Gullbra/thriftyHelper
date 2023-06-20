@@ -37,7 +37,8 @@ internal class DevSql
 				recipy_id       SERIAL        PRIMARY KEY,
 				recipy_name     varchar(120)  NOT NULL,
 				description     text          NOT NULL,
-				UNIQUE (recipy_id, recipy_name)
+				UNIQUE (recipy_id),
+				UNIQUE (recipy_name)
 			);
 
 			CREATE TABLE IF NOT EXISTS {ingredientsTableName} (
@@ -47,7 +48,8 @@ internal class DevSql
 				price_per_unit		float(8)			NOT NULL,
 				energy_per_unit		float(8)			NOT NULL,
 				protein_per_unit	float(8)			NOT NULL,
-				UNIQUE (ingredient_id, ingredient_name)
+				UNIQUE (ingredient_id),
+				UNIQUE (ingredient_name)
 			);
 
 			CREATE TABLE IF NOT EXISTS {ingredientsInRecipiesTableName} (
@@ -60,7 +62,8 @@ internal class DevSql
 			CREATE TABLE IF NOT EXISTS {recipyCategoriesTableName} (
 				recipy_category_id	SERIAL			PRIMARY KEY,
 				category_name				VARCHAR(32)	NOT NULL,
-				UNIQUE(recipy_category_id, category_name)
+				UNIQUE (recipy_category_id),
+				UNIQUE (category_name)
 			);
 
 			CREATE TABLE IF NOT EXISTS {categoriesInRecipiesTableName} (
@@ -72,7 +75,8 @@ internal class DevSql
 			CREATE TABLE IF NOT EXISTS {ingredientCategoriesTableName} (
 				ingredient_category_id	SERIAL			PRIMARY KEY,
 				category_name						VARCHAR(32)	NOT NULL,
-				UNIQUE(ingredient_category_id, category_name)
+				UNIQUE (ingredient_category_id),
+				UNIQUE (category_name)
 			);
 
 			CREATE TABLE IF NOT EXISTS {categoriesInIngredientsTableName} (

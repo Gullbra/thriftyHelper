@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ThriftyHelper.Backend.ClassLibrary;
@@ -28,14 +29,28 @@ public class Ingredient
 		LastUpdated = dateTime;
 		InCategories = inCategories;
 	}
-
+	[JsonPropertyName("id")]
 	public int Id { get; set; }
+
+	[JsonPropertyName("name")]
 	public string Name { get; set; }
+
+	[JsonPropertyName("unit")]
 	public string Unit { get; set; }
+
+	[JsonPropertyName("pricePerUnit")]
 	public double PricePerUnit { get; set; }
+
+	[JsonPropertyName("energyPerUnit")]
 	public double EnergyPerUnit { get; set; }
+
+	[JsonPropertyName("proteinPerUnit")]
 	public double ProteinPerUnit { get; set; }
+
+	[JsonPropertyName("lastUpdated")]
 	public DateTime? LastUpdated { get; set; }
+
+	[JsonPropertyName("inCategories")]
 	public List<string> InCategories { get; set; }
 }
 

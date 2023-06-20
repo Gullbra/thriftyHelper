@@ -3,6 +3,7 @@ using DbConnect.interfaces;
 using DbConnect.Responses;
 using DbConnect.Sql;
 using Npgsql;
+using System.Reflection.PortableExecutable;
 
 namespace DbConnect.SqlOperations;
 
@@ -98,9 +99,9 @@ public class DevSqlOperations : IDevSqlOperations
 		try
 		{
 			/*
-			IngCategories
+				IngCategories
 
-			RecCategories
+				RecCategories
 			
 				foreach(Ingredients)
 				{
@@ -114,13 +115,11 @@ public class DevSqlOperations : IDevSqlOperations
 					recipiesInCategories
 					ingredientsInRecipies
 				}
-
 			*/
 
 			foreach (var category in ingredientsData.Categories)
 			{
 				var conn = await dbDataSource.OpenConnectionAsync();
-
 				await using (var cmd = new NpgsqlCommand(
 					$@"
 						INSERT INTO {
@@ -146,7 +145,6 @@ public class DevSqlOperations : IDevSqlOperations
 			foreach (var category in recipiesData.Categories)
 			{
 				var conn = await dbDataSource.OpenConnectionAsync();
-
 				await using (var cmd = new NpgsqlCommand(
 					$@"
 						INSERT INTO {sqlStrings.TablesNamesList
@@ -169,35 +167,79 @@ public class DevSqlOperations : IDevSqlOperations
 
 			foreach (var ingredient in ingredientsData.IngredientsList)
 			{
-				//await using (var cmd = new NpgsqlCommand(
-				//	$@"
-				//		INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredientsTable")}(
-				//			ingredient_name
-				//			ingredient_unit
-				//			price_per_unit
-				//			energy_per_unit
-				//			protein_per_unit
-				//		)
-				//		VALUES(
-				//			@i_n,
-				//			@i_u,
-				//			@prPU,
-				//			@ePU,
-				//			@pPU
-				//		)
-				//	;", 
-				//	conn))
-				//{
-				//	cmd.Parameters.AddWithValue("@i_n", category);
-				//	await cmd.ExecuteNonQueryAsync();
-				//}
-				/*
-				 * 
-				 
-				 */
-				Console.WriteLine(ingredient.Name);       
-			}
-			progressMessages.Add("ingredients");
+				var conn = await dbDataSource.OpenConnectionAsync();
+				int ing_id;
+
+				await using (var cmd = new NpgsqlCommand(
+					$@"
+						INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredientsTable").ToList()[0].Value}(
+							ingredient_name,
+							ingredient_unit,
+							price_per_unit,
+							energy_per_unit,
+							protein_per_unit
+						)
+						VALUES(
+							@i_n,
+							@i_u,
+							@prPU,
+							@ePU,
+							@pPU
+						)
+						ON CONFLICT DO NOTHING
+						RETURNING (ingredient_id)
+					;",
+					conn))
+				{
+					cmd.Parameters.AddWithValue("@i_n", ingredient.Name);
+					cmd.Parameters.AddWithValue("@i_u", ingredient.Unit);
+					cmd.Parameters.AddWithValue("@prPU", ingredient.PricePerUnit);
+					cmd.Parameters.AddWithValue("@ePU", ingredient.EnergyPerUnit);
+					cmd.Parameters.AddWithValue("@pPU", ingredient.ProteinPerUnit);
+
+					await using var reader = await cmd.ExecuteReaderAsync();
+
+					while (reader.Read())
+					{
+						Console.WriteLine("Ing_id: " + reader.GetInt32(0));
+						ing_id = reader.GetInt32(0);
+						var conn2 = await dbDataSource.OpenConnectionAsync();
+
+						foreach (var inCategory in ingredient.InCategories)
+						{
+							Console.WriteLine("Ing_Cat: " + inCategory);
+							
+
+							await using (var cmd2 = new NpgsqlCommand(
+								$@"
+									INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredients in categories").ToList()[0].Value}(
+										ingredient_id,
+										ingredient_category_id
+									)
+									VALUES(
+										@i_d,
+										(
+											SELECT ingredient_category_id 
+											FROM {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredientCategoryTable").ToList()[0].Value}
+											WHERE category_name = @c_n
+										)
+									)
+									ON CONFLICT DO NOTHING
+								;
+								",
+								conn2))
+							{
+								cmd2.Parameters.AddWithValue("@i_d", ing_id);
+								cmd2.Parameters.AddWithValue("@c_n", inCategory);
+								await cmd2.ExecuteNonQueryAsync();
+							}
+						}
+
+					}
+					progressMessages.Add("ingredients");
+					}
+				}
+
 
 			//foreach (var recipy in recipiesData.RecipiesList)
 			//{

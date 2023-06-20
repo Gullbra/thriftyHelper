@@ -33,7 +33,7 @@
       "proteinPerUnit": 0.3,
       "lastUpdated": "2023",
       "inCategories": [
-        "fruit"
+        "fruits"
       ]
     },
     {
@@ -240,7 +240,7 @@
   "categories": [
     "dairy",
     "seafood",
-    "fruit",
+    "fruits",
     "bread",
     "nuts",
     "sweet",
