@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary;
+namespace ThriftyHelper.Backend.ClassLibrary;
 
-internal class Category
+public class Category
 {
 	Category(string? recipyId, string? ingredientId, string categoryId)
 	{

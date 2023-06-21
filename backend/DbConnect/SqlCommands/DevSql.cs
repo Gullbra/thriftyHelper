@@ -48,6 +48,7 @@ internal class DevSql
 				price_per_unit		float(8)			NOT NULL,
 				energy_per_unit		float(8)			NOT NULL,
 				protein_per_unit	float(8)			NOT NULL,
+				last_updated			TIMESTAMPTZ		NOT NULL,
 				UNIQUE (ingredient_id),
 				UNIQUE (ingredient_name)
 			);

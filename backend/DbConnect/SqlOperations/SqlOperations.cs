@@ -1,4 +1,5 @@
-﻿using DbConnect.interfaces;
+﻿
+using DbConnect.interfaces;
 using DbConnect.Responses;
 using DbConnect.Sql;
 using Npgsql;
@@ -32,6 +33,11 @@ public class SqlOperations : ISqlOperations
 			List<Ingredient> ingredientsList = new();
 			while (await reader.ReadAsync())
 			{
+				var categoriesResponse = await GetCategoriesForItem("ingredient", reader.GetInt32(0));
+
+				if (!categoriesResponse.Success || categoriesResponse.DataStringList == null)
+					return categoriesResponse;
+
 				ingredientsList.Add(new Ingredient(
 					id: reader.GetInt32(0),
 					name: reader.GetString(1),
@@ -40,7 +46,7 @@ public class SqlOperations : ISqlOperations
 					energyPerUnit: reader.GetDouble(4),
 					proteinPerUnit: reader.GetDouble(5),
 					dateTime: reader.GetDateTime(6),
-					inCategories: new List<string>()));
+					inCategories: categoriesResponse.DataStringList));
 			}
 
 			return new SqlResponse(true, ingredientsList, $"Success!");
@@ -48,6 +54,43 @@ public class SqlOperations : ISqlOperations
 		catch(Exception ex)
 		{
 			return new SqlResponse(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+		}
+	}
+
+	private async Task<SqlResponse> GetCategoriesForItem(string categoryType, int itemId)
+	{
+		if (categoryType != "recipy" && categoryType != "ingredient")
+			return new SqlResponse(false, new List<string>(), "Trying to retrieve non-existant category types");
+
+		using var conn = await dbDataSource.OpenConnectionAsync();
+
+		try
+		{
+			using var cmd = new NpgsqlCommand
+			(
+				categoryType == "ingredient"
+					? sqlStrings.GetCategoriesFromIngredientId
+					: sqlStrings.GetCategoriesFromRecipyId,
+				conn
+			);
+			cmd.Parameters.AddWithValue("@id", itemId);
+
+			using var reader = cmd.ExecuteReader();
+
+			List<string> categories = new List<string>();
+			while ( await reader.ReadAsync())
+			{
+				categories.Add(reader.GetString(0));
+			}
+			return new SqlResponse(true, categories, $"Categories for ingredient {itemId} retrieved");
+		}
+		catch(Exception ex)
+		{
+			return new SqlResponse(false, new List<string>(), ex.Message);
+		}
+		finally
+		{
+			conn.Close();
 		}
 	}
 }

@@ -3,7 +3,6 @@ using DbConnect.interfaces;
 using DbConnect.Responses;
 using DbConnect.Sql;
 using Npgsql;
-using ThriftyHelper.Backend.ClassLibrary;
 
 namespace DbConnect.SqlOperations;
 
@@ -177,14 +176,16 @@ public class DevSqlOperations : IDevSqlOperations
 							ingredient_unit,
 							price_per_unit,
 							energy_per_unit,
-							protein_per_unit
+							protein_per_unit,
+							last_updated
 						)
 						VALUES(
 							@i_n,
 							@i_u,
 							@prPU,
 							@ePU,
-							@pPU
+							@pPU,
+							CURRENT_TIMESTAMP
 						)
 						ON CONFLICT DO NOTHING
 						RETURNING (ingredient_id)

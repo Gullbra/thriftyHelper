@@ -10,129 +10,26 @@ using DbConnect.dbInit;
  https://zetcode.com/csharp/postgresql/
  */
 
-/* Tables:
-stored_recipies(
-    recipy_id       SERIAL        PRIMARY KEY,
-    name            varchar(120)  NOT NULL,
-    description     text          NOT NULL
-);
+//var Test = new DevSqlOperations(true);
+//var responesTear = await Test.DevTearDownTables(); Console.WriteLine($"Tables dropped: {responesTear.Success}");
+//var resposeBuild = await Test.DevSetUpTables(); Console.WriteLine($"Tables build: {resposeBuild.Success}");
+//var response = await Test.DevReInitDb();
+//Console.WriteLine($"Success: {response.Success}, Message: {response.Message}");
 
-stored_ingredients
-(
-  ingredient_id   	SERIAL          PRIMARY KEY,
-	name            	varchar(255)  NOT NULL,
-  unit		    			varchar(20)   NOT NULL,
-	price_per_unit		float(8)			NOT NULL,
-	energy_per_unit		float(8)			NOT NULL,
-	protein_per_unit	float(8)			NOT NULL
-);
+var TestSqlOps = new SqlOperations(true);
+var ingredientList = await TestSqlOps.GetIngredientsList();
+if (ingredientList.Success)
+{
+	if (ingredientList.DataIngredientList != null && ingredientList.DataIngredientList.Count > 0)
+	{
+		foreach (var cat in ingredientList.DataIngredientList[0].InCategories)
+		{
+			Console.WriteLine(cat);
+		}
+	}
+}
+else
+{
+	Console.WriteLine(ingredientList.Message);
+}
 
-ingredients_in_recepies
-(
-	recipy_id 				integer 			REFERENCES stored_recipies,
-	ingredient_id			integer 			REFERENCES stored_ingredients,
-  PRIMARY KEY(recipy_id, ingredient_id),
-	quantity 					float(4)			NOT NULL	
-);
- */
-
-/* Insert Ingredient
- INSERT INTO stored_ingredients (
-	 name, 
-	 unit, 
-	 price_per_unit, 
-	 energy_per_unit,
-	 protein_per_unit
- ) VALUES (
-	 'ägg',
-	 'st(ca 60g)',
-	 2,
-	 82.2,
-	 7.44
- );
-*/
-
-/* Insert recipy
-	INSERT INTO stored_recipies (
-		name, 
-		description
-	) VALUES (
-		'blodpudding med ägg och bacon',
-		'Blodpudding med äggröra och stekt bacon'
-	);
- */
-
-/* Insert ingredients in recipy referece
- * 	foreach ingredient in recipy:
-
-	INSERT INTO ingredients_in_recepies (
-		recipy_id, 
-		ingredient_id,
-		quantity
-	) VALUES (
-		(SELECT recipy_id FROM stored_recipies WHERE name='blodpudding med ägg och bacon'),
-		(SELECT ingredient_id FROM stored_ingredients WHERE name='bacon'),
-		70
-	); 
-*/
-
-// For testing through commandline:
-//SqlOperations.GetRecipy("blodpudding med ägg och bacon");
-
-//var TestConLocal = new SqlOperations(true);
-//// TestConLocal.TestConnection();
-//// TestConLocal.SetUpDb();
-//// TestConLocal.TestConnection();
-//var retrievedData = TestConLocal.UpdateIngredient(new Ingredient(
-//	4,
-//	null,
-//	"hey",
-//	"g",
-//	50,
-//	200,
-//	15,
-//	null));
-
-//Console.WriteLine(@$"
-//Id: {retrievedData.Id}
-//Name: {retrievedData.Name}
-//");
-
-//var TestConLocal = new DevSqlOperations(true);
-//var test = await TestConLocal.DevSetUpTables();
-//Console.WriteLine(
-//	test.Message
-//	);
-
-
-//foreach (var ingredient in retrievedData.Ingredients)
-//{
-//	Console.WriteLine($"\t{ingredient.Name} - {ingredient.Quantity} {ingredient.Unit}");
-//}
-
-
-//MockDataReader.CheckingPath();
-
-//var testing = await MockDataReader.GetRecipiesData();
-
-//if (testing == null)
-//{
-//	Console.WriteLine("returned null!");
-//}
-//else if (testing.Categories == null)
-//{
-//	Console.WriteLine("returned objects properties == null");
-//}
-//else
-//{
-//	foreach (var cat in testing.Categories)
-//	{
-//		Console.WriteLine(cat);
-//	}
-//}
-
-var Test = new DevSqlOperations(true);
-var responesTear = await Test.DevTearDownTables(); Console.WriteLine($"Tables droped: {responesTear.Success}");
-var resposeBuild = await Test.DevSetUpTables(); Console.WriteLine($"Tables build: {resposeBuild.Success}");
-var response = await Test.DevReInitDb();
-Console.WriteLine($"Success: {response.Success}, Message: {response.Message}");
