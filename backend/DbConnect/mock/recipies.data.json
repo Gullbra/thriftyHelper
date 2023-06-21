@@ -87,7 +87,7 @@
       "description":"description9",
       "ingredients":[
         { "id":23 , "quantity":24 },
-        { "id":25 , "quantity":26 }
+        { "id":20 , "quantity":26 }
       ],
       "inCategories":["category17","category18"]
     },
@@ -96,8 +96,8 @@
       "name":"name10",
       "description":"description10",
       "ingredients":[
-        { "id":27, "quantity":28 },
-        { "id":29, "quantity":30 }
+        { "id":1, "quantity":28 },
+        { "id":7, "quantity":30 }
       ],
       "inCategories":["category19","category20"]
     }

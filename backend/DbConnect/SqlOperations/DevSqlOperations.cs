@@ -3,7 +3,7 @@ using DbConnect.interfaces;
 using DbConnect.Responses;
 using DbConnect.Sql;
 using Npgsql;
-using System.Reflection.PortableExecutable;
+using ThriftyHelper.Backend.ClassLibrary;
 
 namespace DbConnect.SqlOperations;
 
@@ -165,11 +165,11 @@ public class DevSqlOperations : IDevSqlOperations
 			}
 			progressMessages.Add("recipy categories");
 
+			var conn1 = await dbDataSource.OpenConnectionAsync();
+			var conn2 = await dbDataSource.OpenConnectionAsync();
+
 			foreach (var ingredient in ingredientsData.IngredientsList)
 			{
-				var conn = await dbDataSource.OpenConnectionAsync();
-				int ing_id;
-
 				await using (var cmd = new NpgsqlCommand(
 					$@"
 						INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredientsTable").ToList()[0].Value}(
@@ -189,7 +189,8 @@ public class DevSqlOperations : IDevSqlOperations
 						ON CONFLICT DO NOTHING
 						RETURNING (ingredient_id)
 					;",
-					conn))
+					conn1
+				))
 				{
 					cmd.Parameters.AddWithValue("@i_n", ingredient.Name);
 					cmd.Parameters.AddWithValue("@i_u", ingredient.Unit);
@@ -201,15 +202,8 @@ public class DevSqlOperations : IDevSqlOperations
 
 					while (reader.Read())
 					{
-						Console.WriteLine("Ing_id: " + reader.GetInt32(0));
-						ing_id = reader.GetInt32(0);
-						var conn2 = await dbDataSource.OpenConnectionAsync();
-
 						foreach (var inCategory in ingredient.InCategories)
 						{
-							Console.WriteLine("Ing_Cat: " + inCategory);
-							
-
 							await using (var cmd2 = new NpgsqlCommand(
 								$@"
 									INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredients in categories").ToList()[0].Value}(
@@ -229,23 +223,102 @@ public class DevSqlOperations : IDevSqlOperations
 								",
 								conn2))
 							{
-								cmd2.Parameters.AddWithValue("@i_d", ing_id);
+								cmd2.Parameters.AddWithValue("@i_d", reader.GetInt32(0));
 								cmd2.Parameters.AddWithValue("@c_n", inCategory);
 								await cmd2.ExecuteNonQueryAsync();
 							}
 						}
-
-					}
-					progressMessages.Add("ingredients");
 					}
 				}
+			}
+			progressMessages.Add("ingredients");
 
 
-			//foreach (var recipy in recipiesData.RecipiesList)
-			//{
-			//	Console.WriteLine(recipy.Name);
-			//}
-			//progressMessages.Add("recipies");
+			foreach (var recipy in recipiesData.RecipiesList)
+			{
+				await using var cmd1 = new NpgsqlCommand(
+					$@"
+						INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "recipyTable").ToList()[0].Value}(
+							recipy_name,
+							description
+						)
+						VALUES(
+							@r_n,
+							@r_d
+						)
+						ON CONFLICT DO NOTHING
+						RETURNING (recipy_id)
+					;
+					",
+					conn1
+				);
+
+				cmd1.Parameters.AddWithValue("@r_n", recipy.Name);
+				cmd1.Parameters.AddWithValue("@r_d", recipy.Description);
+
+				await using var reader = await cmd1.ExecuteReaderAsync();
+
+
+				while (reader.Read())
+				{
+					foreach (var ingredient in recipy.Ingredients)
+					{
+						await using var cmd2 = new NpgsqlCommand(
+							$@"
+								INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "ingredients in recipies").ToList()[0].Value}(
+									recipy_id,
+									ingredient_id,
+									quantity
+								)
+								VALUES(
+									@r_id,
+									@i_id,
+									@q
+								)
+								ON CONFLICT DO NOTHING;
+							",
+							conn2
+						);
+
+						cmd2.Parameters.AddWithValue("@r_id", reader.GetInt32(0));
+						cmd2.Parameters.AddWithValue("@i_id", ingredient.Id);
+						cmd2.Parameters.AddWithValue("@q", ingredient.Quantity);
+
+						await cmd2.ExecuteNonQueryAsync();
+					}
+
+					foreach (var cat in recipy.InCategories)
+					{
+						await using var cmd2 = new NpgsqlCommand(
+							$@"
+								INSERT INTO {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "categories in recipies").ToList()[0].Value}(
+									recipy_id,
+									recipy_category_id
+								)
+								VALUES(
+									@r_id,
+									(
+										SELECT recipy_category_id 
+										FROM {sqlStrings.TablesNamesList.Where(tableNameKvp => tableNameKvp.Key == "recipyCategoriesTable").ToList()[0].Value}
+										WHERE category_name = @c_n
+									)
+								)
+								ON CONFLICT DO NOTHING;
+							",
+							conn2
+						);
+
+						cmd2.Parameters.AddWithValue("@r_id", reader.GetInt32(0));
+						cmd2.Parameters.AddWithValue("@c_n", cat);
+
+						await cmd2.ExecuteNonQueryAsync();
+					}
+				}
+			}
+			progressMessages.Add("recipies");
+
+			await conn1.CloseAsync();
+			await conn2.CloseAsync();
 
 			return new DevSqlResponse(true, $"Created entries:\n{
 				ingredientsData.Categories.Count} ingredient categories\n{

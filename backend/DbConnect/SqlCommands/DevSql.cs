@@ -109,5 +109,4 @@ internal class DevSql
 	public string SetUpTables { get; }
 	public string DevDropTables { get; }
 	public string DevInsertCategoryIng { get; }
-
 }
