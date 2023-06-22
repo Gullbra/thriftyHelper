@@ -23,7 +23,7 @@ public class SqlOperations : ISqlOperations
 		dbDataSource = NpgsqlDataSource.Create(ConnStr.Get(devMode));
 	}
 
-	public async Task<SqlResponse> GetIngredientsList()
+	public async Task<SqlResponse<List<Ingredient>>> GetIngredientsList()
 	{
 		try
 		{
@@ -35,8 +35,8 @@ public class SqlOperations : ISqlOperations
 			{
 				var categoriesResponse = await GetCategoriesForItem("ingredient", reader.GetInt32(0));
 
-				if (!categoriesResponse.Success || categoriesResponse.DataStringList == null)
-					return categoriesResponse;
+				if (!categoriesResponse.Success || categoriesResponse.Data == null)
+					return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), categoriesResponse.Message);
 
 				ingredientsList.Add(new Ingredient(
 					id: reader.GetInt32(0),
@@ -46,21 +46,56 @@ public class SqlOperations : ISqlOperations
 					energyPerUnit: reader.GetDouble(4),
 					proteinPerUnit: reader.GetDouble(5),
 					dateTime: reader.GetDateTime(6),
-					inCategories: categoriesResponse.DataStringList));
+					inCategories: categoriesResponse.Data));
 			}
 
-			return new SqlResponse(true, ingredientsList, $"Success!");
+			return new SqlResponse<List<Ingredient>>(true, ingredientsList, $"Success!");
 		}
 		catch(Exception ex)
 		{
-			return new SqlResponse(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+			return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), $"Error: ${ex.Message}");
 		}
 	}
 
-	private async Task<SqlResponse> GetCategoriesForItem(string categoryType, int itemId)
+	public async Task<SqlResponse<List<Recipy>>> GetRecipyList()
+	{
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.GetIngredients);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Ingredient> ingredientsList = new();
+			while (await reader.ReadAsync())
+			{
+				var categoriesResponse = await GetCategoriesForItem("ingredient", reader.GetInt32(0));
+
+				if (!categoriesResponse.Success || categoriesResponse.Data == null)
+					return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), categoriesResponse.Message);
+
+				ingredientsList.Add(new Ingredient(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					unit: reader.GetString(2),
+					pricePerUnit: reader.GetDouble(3),
+					energyPerUnit: reader.GetDouble(4),
+					proteinPerUnit: reader.GetDouble(5),
+					dateTime: reader.GetDateTime(6),
+					inCategories: categoriesResponse.Data));
+			}
+
+			return new SqlResponse<List<Ingredient>>(true, ingredientsList, $"Success!");
+		}
+		catch (Exception ex)
+		{
+			return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+		}
+		throw new NotImplementedException();
+	}
+
+	private async Task<SqlResponse<List<string>>> GetCategoriesForItem(string categoryType, int itemId)
 	{
 		if (categoryType != "recipy" && categoryType != "ingredient")
-			return new SqlResponse(false, new List<string>(), "Trying to retrieve non-existant category types");
+			return new SqlResponse<List<string>>(false, new List<string>(), "Trying to retrieve non-existant category types");
 
 		using var conn = await dbDataSource.OpenConnectionAsync();
 
@@ -77,16 +112,16 @@ public class SqlOperations : ISqlOperations
 
 			using var reader = cmd.ExecuteReader();
 
-			List<string> categories = new List<string>();
+			List<string> categories = new();
 			while ( await reader.ReadAsync())
 			{
 				categories.Add(reader.GetString(0));
 			}
-			return new SqlResponse(true, categories, $"Categories for ingredient {itemId} retrieved");
+			return new SqlResponse<List<string>>(true, categories, $"Categories for ingredient {itemId} retrieved");
 		}
 		catch(Exception ex)
 		{
-			return new SqlResponse(false, new List<string>(), ex.Message);
+			return new SqlResponse<List<string>>(false, new List<string>(), ex.Message);
 		}
 		finally
 		{
