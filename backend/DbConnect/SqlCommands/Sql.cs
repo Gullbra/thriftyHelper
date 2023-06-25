@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,10 +49,71 @@ internal class Sql
 				INNER JOIN {ingredientsTableName} si
 					ON ip.ingredient_id = si.ingredient_id;
 		";
+
+		InsertNewIngredientCategory = $@"
+			INSERT INTO {ingredientCategoriesTableName}(
+				category_name
+			)
+			VALUES(
+				@c_n
+			)
+			ON CONFLICT DO NOTHING
+			RETURNING *
+		;";
+
+		InsertNewRecipyCategory = $@"
+			INSERT INTO {recipyCategoriesTableName}(
+				category_name
+			)
+			VALUES(
+				@c_n
+			)
+			ON CONFLICT DO NOTHING
+			RETURNING *
+		;";
+
+		InsertNewIngredient = $@"
+			INSERT INTO {ingredientsTableName}
+			(
+				ingredient_name,
+				ingredient_unit,
+				price_per_unit,
+				energy_per_unit,
+				protein_per_unit,
+				last_updated
+			)
+			VALUES(
+				@i_n,
+				@i_u,
+				@prPU,
+				@ePU,
+				@pPU,
+				CURRENT_TIMESTAMP
+			)
+			ON CONFLICT DO NOTHING
+			RETURNING *
+		;";
+
+		InsertIngredientCategoryMapping = @$"
+			INSERT INTO {categoriesInIngredientsTableName}
+			(
+				ingredient_category_id,
+				ingredient_id
+			)
+			VALUES(
+				@i_c_id,
+				@i_id
+			)
+			ON CONFLICT DO NOTHING;
+		";
 	}
 
 	public string GetIngredients { get; }
 	public string GetCategoriesFromIngredientId { get; }
 	public string GetCategoriesFromRecipyId { get; }
 	public string GetRecipies { get; }
+	public string InsertNewIngredientCategory { get; }
+	public string InsertNewRecipyCategory { get; }
+	public string InsertNewIngredient { get; }
+	public string InsertIngredientCategoryMapping { get; }
 }

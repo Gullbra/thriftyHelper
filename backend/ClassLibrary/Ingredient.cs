@@ -10,7 +10,7 @@ namespace ThriftyHelper.Backend.ClassLibrary;
 public class Ingredient
 {
 	public Ingredient(
-		int id,
+		int? id,
 		string name, 
 		string unit, 
 		double pricePerUnit,
@@ -18,7 +18,6 @@ public class Ingredient
 		double proteinPerUnit, 
 		DateTime? dateTime,
 		List<string> inCategories)
-
 	{
 		Id = id;
 		Name = name.ToLower();
@@ -30,7 +29,7 @@ public class Ingredient
 		InCategories = inCategories;
 	}
 	[JsonPropertyName("id")]
-	public int Id { get; set; }
+	public int? Id { get; set; }
 
 	[JsonPropertyName("name")]
 	public string Name { get; set; }

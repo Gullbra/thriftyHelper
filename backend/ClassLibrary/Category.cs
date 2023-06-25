@@ -8,17 +8,10 @@ namespace ThriftyHelper.Backend.ClassLibrary;
 
 public class Category
 {
-	Category(string? recipyId, string? ingredientId, string categoryId)
-	{
-		if(recipyId != null)
-			RecipyId = recipyId;
-		if ( ingredientId != null)
-			IngredientId = ingredientId;
+	public Category() { }
+	public Category(string categoryName, int categoryId)
+	{ CategoryName = categoryName; CategoryId = categoryId; }
 
-		CategoryId = categoryId;
-	}
-
-	public string? RecipyId { get; }
-	public string? IngredientId { get; }
-	public string CategoryId { get; }
+	public string? CategoryName { get; }
+	public int? CategoryId { get; }
 }

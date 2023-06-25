@@ -57,39 +57,107 @@ public class SqlOperations : ISqlOperations
 		}
 	}
 
-	public async Task<SqlResponse<List<Recipy>>> GetRecipyList()
+	public async Task<SqlResponse<Ingredient>> InsertNewIngredient(Ingredient newIngredient)
 	{
+		/*
+		Insert new category if category doesn't exist -> return cat_Id
+		Insert ingredient -> return ing_Id
+			insert ingredient-category mapping
+	 */
+		var conn = await dbDataSource.OpenConnectionAsync();
+		var categoryList = new List<Category>();
+
+		foreach(var category in newIngredient.InCategories)
+		{
+			var response = await InsertNewCategoryForItem("ingredient", category, conn);
+
+			if (!response.Success)
+			{
+				conn.Close();
+				return new SqlResponse<Ingredient>(false, newIngredient, "new category data insertion fail:" + response.Message);
+			}
+			categoryList.Add(response.Data);
+		}
+
 		try
 		{
-			using var command = dbDataSource.CreateCommand(sqlStrings.GetIngredients);
-			await using var reader = await command.ExecuteReaderAsync();
+			await using var cmd = new NpgsqlCommand(sqlStrings.InsertNewIngredient, conn);
+			cmd.Parameters.AddWithValue("@i_n", newIngredient.Name);
+			cmd.Parameters.AddWithValue("@i_u", newIngredient.Unit);
+			cmd.Parameters.AddWithValue("@prPU", newIngredient.PricePerUnit);
+			cmd.Parameters.AddWithValue("@ePU", newIngredient.EnergyPerUnit);
+			cmd.Parameters.AddWithValue("@pPU", newIngredient.ProteinPerUnit);
+			using var reader = await cmd.ExecuteReaderAsync();
 
-			List<Ingredient> ingredientsList = new();
-			while (await reader.ReadAsync())
+			while (reader.Read())
 			{
-				var categoriesResponse = await GetCategoriesForItem("ingredient", reader.GetInt32(0));
-
-				if (!categoriesResponse.Success || categoriesResponse.Data == null)
-					return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), categoriesResponse.Message);
-
-				ingredientsList.Add(new Ingredient(
-					id: reader.GetInt32(0),
-					name: reader.GetString(1),
-					unit: reader.GetString(2),
-					pricePerUnit: reader.GetDouble(3),
-					energyPerUnit: reader.GetDouble(4),
-					proteinPerUnit: reader.GetDouble(5),
-					dateTime: reader.GetDateTime(6),
-					inCategories: categoriesResponse.Data));
+				newIngredient.Id = reader.GetInt32(0);
+				newIngredient.LastUpdated = reader.GetDateTime(6);
 			}
-
-			return new SqlResponse<List<Ingredient>>(true, ingredientsList, $"Success!");
 		}
 		catch (Exception ex)
 		{
-			return new SqlResponse<List<Ingredient>>(false, new List<Ingredient>(), $"Error: ${ex.Message}");
+			conn.Close();
+			return new SqlResponse<Ingredient>(false, newIngredient, "Ingredient data insertion fail:" + ex.Message);
 		}
-		throw new NotImplementedException();
+
+		try
+		{
+			if (newIngredient.Id == null)
+			{
+				conn.Close();
+				return new SqlResponse<Ingredient>(false, newIngredient, "No ingredient id returned after insertion");
+			}
+
+			foreach(var cate in categoryList)
+			{
+				if (cate.CategoryId == null)
+				{ conn.Close(); return new SqlResponse<Ingredient>(false, newIngredient, "Missing category Id"); }
+
+				await using var cmd = new NpgsqlCommand(sqlStrings.InsertIngredientCategoryMapping, conn);
+				cmd.Parameters.AddWithValue("@i_c_id", cate.CategoryId);
+				cmd.Parameters.AddWithValue("@i_id", newIngredient.Id);
+				cmd.ExecuteNonQuery();
+			}
+		}
+		catch (Exception ex)
+		{
+			conn.Close();
+			return new SqlResponse<Ingredient>(false, newIngredient, "Ingredient-category mapping fail:" + ex.Message);
+		}
+
+		conn.Close();
+		return new SqlResponse<Ingredient>(true, newIngredient, "suxcces");
+	}
+
+
+	/* Helper mehtods*/
+	private async Task<SqlResponse<Category>> InsertNewCategoryForItem(string categoryType, string newCategoryName, NpgsqlConnection conn)
+	{
+		if (categoryType != "recipy" && categoryType != "ingredient")
+			return new SqlResponse<Category>(false, new(), "Trying to insert non-existant category types");
+		try
+		{
+			await using var cmd = new NpgsqlCommand
+			(
+				categoryType == "ingredient" 
+					? sqlStrings.InsertNewIngredientCategory
+					: sqlStrings.InsertNewRecipyCategory, 
+				conn
+			);
+			cmd.Parameters.AddWithValue("@c_n", newCategoryName);
+			await using var reader = await cmd.ExecuteReaderAsync();
+			var returnedCategory = new Category();
+			while (reader.Read())
+			{
+				returnedCategory = new(reader.GetString(1), reader.GetInt32(0));
+			}
+			return new SqlResponse<Category>(true, returnedCategory, "success");
+		}
+		catch(Exception ex)
+		{
+			return new SqlResponse<Category>(false, new(), message: ex.Message);
+		}
 	}
 
 	private async Task<SqlResponse<List<string>>> GetCategoriesForItem(string categoryType, int itemId)
@@ -113,7 +181,7 @@ public class SqlOperations : ISqlOperations
 			using var reader = cmd.ExecuteReader();
 
 			List<string> categories = new();
-			while ( await reader.ReadAsync())
+			while (await reader.ReadAsync())
 			{
 				categories.Add(reader.GetString(0));
 			}
