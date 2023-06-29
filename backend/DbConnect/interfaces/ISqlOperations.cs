@@ -12,8 +12,8 @@ internal interface ISqlOperations
 {
 	public Task<SqlResponse<List<Ingredient>>> GetIngredientsList();
 	public Task<SqlResponse<Ingredient>> InsertNewIngredient(Ingredient newIngredient);
-	//public async Task<SqlResponse<List<Ingredient>>> UpdateIngredient(Ingredient updatedIngredient);
-	//public async Task<SqlResponse<List<Ingredient>>> DeleteIngredient(int id);
+	public Task<SqlResponse<Ingredient>> UpdateIngredient(Ingredient updatedIngredient, Ingredient currentIngredient);
+	//public async Task<SqlResponse<Ingredient>> DeleteIngredient(int id);
 
 
 

@@ -57,6 +57,41 @@ public class SqlOperations : ISqlOperations
 		}
 	}
 
+	public async Task<SqlResponse<Ingredient?>> GetOneIngredientById(int ingredientId)
+	{
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.GetIngredientById);
+			command.Parameters.AddWithValue("@i_id", ingredientId);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Ingredient> ingredientsList = new();
+			while (await reader.ReadAsync())
+			{
+				var categoriesResponse = await GetCategoriesForItem("ingredient", ingredientId);
+
+				if (!categoriesResponse.Success || categoriesResponse.Data == null)
+					return new SqlResponse<Ingredient?>(false, null, categoriesResponse.Message);
+
+				ingredientsList.Add(new Ingredient(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					unit: reader.GetString(2),
+					pricePerUnit: reader.GetDouble(3),
+					energyPerUnit: reader.GetDouble(4),
+					proteinPerUnit: reader.GetDouble(5),
+					dateTime: reader.GetDateTime(6),
+					inCategories: categoriesResponse.Data));
+			}
+
+			return new SqlResponse<Ingredient?>(true, ingredientsList.Count == 0 ? null : ingredientsList[0], $"Success!");
+		}
+		catch (Exception ex)
+		{
+			return new SqlResponse<Ingredient?>(false, null, $"Error: ${ex.Message}");
+		}
+	}
+
 	public async Task<SqlResponse<Ingredient>> InsertNewIngredient(Ingredient newIngredient)
 	{
 		/*
@@ -130,8 +165,134 @@ public class SqlOperations : ISqlOperations
 		return new SqlResponse<Ingredient>(true, newIngredient, "suxcces");
 	}
 
+	public async Task<SqlResponse<Ingredient>> UpdateIngredient(Ingredient updatedIngredient, Ingredient currentIngredient)
+	{
+		/*
+			check delta (old and new data)
+				
+			if (change in cat)
+			{
+				(Upsert instead?)
+				get categories from names => category_id (ON CONFLICT SKIP?)
+					if (retrieved cat.count != inCategories.count)
+						foreach (category.notInDb)
+							insert new categories
+								=> return category_id
+
+				(delete all old mappings then add new) 
+			}
+
+			Update ingredient table
+
+		 */
+
+
+		if (updatedIngredient.Id == null || currentIngredient.Id == null)
+			return new SqlResponse<Ingredient>(false, updatedIngredient, "No id provided");
+
+		if (updatedIngredient.Id != currentIngredient.Id)
+			return new SqlResponse<Ingredient>(false, updatedIngredient, "provedid ingredients data does not have matching id's");
+
+		using var conn = await dbDataSource.OpenConnectionAsync();
+
+		if (updatedIngredient.InCategories.Count != currentIngredient.InCategories.Count || !updatedIngredient.InCategories.All(currentIngredient.InCategories.Contains))
+		{
+			var response = await GetAllCategoriesForItemType("ingredient");
+
+			if (!response.Success)
+			{
+				conn.Close();
+				return new SqlResponse<Ingredient>(false, updatedIngredient, response.Message);
+			}
+
+			/* Insert new category if needed */
+			var newCategories = updatedIngredient.InCategories.Except(response.Data.Select(cat => cat.CategoryName).ToList());
+			if (newCategories.Count() > 0) 
+			{
+				List<Category> relevantCategories = response.Data.Where(cat => updatedIngredient.InCategories.Contains(cat.CategoryName)).ToList();
+
+				foreach (var cat in newCategories)
+				{
+					var response2 = await InsertNewCategoryForItem("ingredient", cat, conn);
+
+					if (!response2.Success)
+					{
+						conn.Close();
+						return new SqlResponse<Ingredient>(false, updatedIngredient, response2.Message);
+					}
+
+					relevantCategories.Add(response2.Data);
+				}
+
+				// category-ingredient mapping
+				await using var cmd = new NpgsqlCommand(sqlStrings.DeleteOldIngredintCategoryMappings, conn);
+				cmd.Parameters.AddWithValue("@i_id", updatedIngredient.Id);
+				await cmd.ExecuteNonQueryAsync();
+
+				foreach(var category in relevantCategories)
+				{
+					await using var cmd2 = new NpgsqlCommand(sqlStrings.InsertIngredientCategoryMapping, conn);
+					cmd2.Parameters.AddWithValue("@i_id", updatedIngredient.Id);
+					cmd2.Parameters.AddWithValue("@i_c_id", category.CategoryId);
+					await cmd2.ExecuteNonQueryAsync();
+				}
+			}
+		}
+
+		try
+		{
+			await using var cmd = new NpgsqlCommand(sqlStrings.UpdateIngredient, conn);
+			cmd.Parameters.AddWithValue("@i_id", updatedIngredient.Id);
+			cmd.Parameters.AddWithValue("@i_n", updatedIngredient.Name);
+			cmd.Parameters.AddWithValue("@i_u", updatedIngredient.Unit);
+			cmd.Parameters.AddWithValue("@prPU", updatedIngredient.PricePerUnit);
+			cmd.Parameters.AddWithValue("@ePU", updatedIngredient.EnergyPerUnit);
+			cmd.Parameters.AddWithValue("@pPU", updatedIngredient.ProteinPerUnit);
+			using var reader = await cmd.ExecuteReaderAsync();
+
+			while (reader.Read())
+			{
+				updatedIngredient.LastUpdated = reader.GetDateTime(6);
+			}
+		}
+		catch (Exception ex)
+		{
+			conn.Close();
+			return new SqlResponse<Ingredient>(false, updatedIngredient, "Ingredient data insertion fail:" + ex.Message);
+		}
+
+		return new SqlResponse<Ingredient>(true, updatedIngredient, "Success!");
+	}
+
 
 	/* Helper mehtods*/
+	private async Task<SqlResponse<List<Category>>> GetAllCategoriesForItemType(string categoryType)
+	{
+		if (categoryType != "recipy" && categoryType != "ingredient")
+			return new SqlResponse<List<Category>>(false, new(), "Trying to retrieve categories of non-existant category types");
+
+		try
+		{
+			using var command = dbDataSource.CreateCommand(categoryType != "ingredient" ? sqlStrings.GetAllIngredientCategories : sqlStrings.GetAllRecipyCategories);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Category> categoriesList = new();
+			while (await reader.ReadAsync())
+			{
+				categoriesList.Add(new Category(
+					categoryId: reader.GetInt32(0),
+					categoryName: reader.GetString(1)
+				));
+			}
+
+			return new SqlResponse<List<Category>>(true, categoriesList, $"Success!");
+		}
+		catch (Exception ex)
+		{
+			return new SqlResponse<List<Category>>(false, new(), $"Error: ${ex.Message}");
+		}
+	}
+
 	private async Task<SqlResponse<Category>> InsertNewCategoryForItem(string categoryType, string newCategoryName, NpgsqlConnection conn)
 	{
 		if (categoryType != "recipy" && categoryType != "ingredient")
