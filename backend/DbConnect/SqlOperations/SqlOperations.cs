@@ -264,6 +264,46 @@ public class SqlOperations : ISqlOperations
 		return new SqlResponse<Ingredient>(true, updatedIngredient, "Success!");
 	}
 
+	public async Task<SqlResponse<Ingredient?>> DeleteIngredient(int ingredientId)
+	{
+		try
+		{
+			using var conn = await dbDataSource.OpenConnectionAsync();
+
+			var categoriesResponse = await GetCategoriesForItem("ingredient", ingredientId);
+
+			if (!categoriesResponse.Success || categoriesResponse.Data == null)
+				throw new Exception($"error:" + categoriesResponse.Message);
+
+			await using var cmdC = new NpgsqlCommand(sqlStrings.DeleteOldIngredintCategoryMappings, conn);
+			cmdC.Parameters.AddWithValue("@i_id", ingredientId);
+			await cmdC.ExecuteNonQueryAsync();
+
+			await using var cmd = new NpgsqlCommand(sqlStrings.DeleteIngredient, conn);
+			cmd.Parameters.AddWithValue("@i_id", ingredientId);
+			using var reader = await cmd.ExecuteReaderAsync();
+
+			Ingredient? deletedIngredient = null;
+			while (reader.Read())
+			{
+				deletedIngredient = new Ingredient(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					unit: reader.GetString(2),
+					pricePerUnit: reader.GetDouble(3),
+					energyPerUnit: reader.GetDouble(4),
+					proteinPerUnit: reader.GetDouble(5),
+					dateTime: reader.GetDateTime(6),
+					inCategories: categoriesResponse.Data);
+			}
+			return new SqlResponse<Ingredient?>(true, deletedIngredient ?? null, "Success");
+		}
+		catch(Exception ex)
+		{
+			return new SqlResponse<Ingredient?>(false, null, ex.Message);
+		}
+	}
+
 
 	/* Helper mehtods*/
 	private async Task<SqlResponse<List<Category>>> GetAllCategoriesForItemType(string categoryType)
@@ -357,6 +397,7 @@ public class SqlOperations : ISqlOperations
 			conn.Close();
 		}
 	}
+
 }
 
 //public class SqlOperations

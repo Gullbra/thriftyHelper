@@ -31,25 +31,38 @@ var TestSqlOps = new SqlOperations(true);
 //);
 
 
-var oldDataResponse = await TestSqlOps.GetOneIngredientById(24);
-if (!oldDataResponse.Success || oldDataResponse.Data == null)
-	throw new Exception($"Failed to retrieve oldIngredient {oldDataResponse.Message}");
+//var oldDataResponse = await TestSqlOps.GetOneIngredientById(24);
+//if (!oldDataResponse.Success || oldDataResponse.Data == null)
+//	throw new Exception($"Failed to retrieve oldIngredient {oldDataResponse.Message}");
 
 
-var UpdateResponse = await TestSqlOps.UpdateIngredient(
-	new Ingredient(
-		id: 24,
-		name: "testing insert", 
-		unit: "g3", 
-		pricePerUnit: 20.0, 
-		energyPerUnit: 20.0, 
-		proteinPerUnit: 20.0,
-		dateTime: null,
-		inCategories: new List<string>() { "testingredients" }),
-		oldDataResponse.Data
-);
+//var UpdateResponse = await TestSqlOps.UpdateIngredient(
+//	new Ingredient(
+//		id: 24,
+//		name: "testing insert", 
+//		unit: "g3", 
+//		pricePerUnit: 20.0, 
+//		energyPerUnit: 20.0, 
+//		proteinPerUnit: 20.0,
+//		dateTime: null,
+//		inCategories: new List<string>() { "testingredients" }),
+//		oldDataResponse.Data
+//);
 
-Console.WriteLine($"succes: {UpdateResponse.Success} - Message: {UpdateResponse.Message}");
+//Console.WriteLine($"succes: {UpdateResponse.Success} - Message: {UpdateResponse.Message}");
+
+
+var deleteResponse = await TestSqlOps.DeleteIngredient(23);
+
+if (deleteResponse.Success)
+{
+	Console.WriteLine($"Success: {deleteResponse.Success}, deleted: " + deleteResponse.Data.Name);
+}
+else
+{
+	Console.WriteLine($"Succes: {deleteResponse.Success}, Message: {deleteResponse.Message}");
+}
+
 
 
 //var ingredientList = await TestSqlOps.GetIngredientsList();

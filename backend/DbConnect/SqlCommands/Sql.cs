@@ -23,11 +23,6 @@ internal class Sql
 
 		TableNames = new string[] { recipyTableName, ingredientsTableName, ingredientsInRecipiesTableName, recipyCategoriesTableName, categoriesInRecipiesTableName, ingredientCategoriesTableName, categoriesInIngredientsTableName};
 
-		//GetIngredients = $@"
-		//	SELECT * 
-		//	FROM {ingredientsTableName};
-		//";
-
 		GetIngredients = $@"SELECT * FROM {ingredientsTableName};";
 
 		GetIngredientById = $@"
@@ -148,6 +143,10 @@ internal class Sql
 			)
 			ON CONFLICT DO NOTHING;
 		";
+
+		DeleteIngredient = $@"
+			DELETE FROM {ingredientsTableName} WHERE ingredient_id = @i_id;
+		";
 	}
 
 	private string[] TableNames { get; }
@@ -166,23 +165,5 @@ internal class Sql
 	public string GetAllRecipyCategories { get; }
 	public string DeleteOldIngredintCategoryMappings { get; }
 	public string InsertNewIngredientCategoryMapping { get; }
-
-	//public string CreateUpdateIngredientSql(Ingredient updatedIngredient)
-	//{
-	//	List<string> fieldsToBeUpdated = new List<string>();
-
-	//	return @$"
-	//		UPDATE {TableNames[1]}
-	//		SET 
-	//			ingredient_name = {updatedIngredient.Name},
-	//			ingredient_unit = {updatedIngredient.Unit},
-	//			price_per_unit = {updatedIngredient.PricePerUnit}
-	//			energy_per_unit = {updatedIngredient.EnergyPerUnit},
-	//			protein_per_unit = {updatedIngredient.ProteinPerUnit},
-	//			last_updated = CURRENT_TIMESTAMP
-	//		WHERE 
-	//			ingredient_id = {updatedIngredient.Id}
-	//		RETURNING *;
-	//	";
-	//}
+	public string DeleteIngredient { get; }
 }

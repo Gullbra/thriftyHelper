@@ -13,19 +13,19 @@ internal interface ISqlOperations
 	public Task<SqlResponse<List<Ingredient>>> GetIngredientsList();
 	public Task<SqlResponse<Ingredient>> InsertNewIngredient(Ingredient newIngredient);
 	public Task<SqlResponse<Ingredient>> UpdateIngredient(Ingredient updatedIngredient, Ingredient currentIngredient);
-	//public async Task<SqlResponse<Ingredient>> DeleteIngredient(int id);
+	public Task<SqlResponse<Ingredient?>> DeleteIngredient(int ingredientId);
 
 
 
 
 
-	//public async Task<SqlResponse<List<Recipy>>> GetRecipyList();
+	//public Task<SqlResponse<List<Recipy>>> GetRecipyList();
 
-	//public async Task<SqlResponse> GetCategoriesList(string type);
+	//public Task<SqlResponse> GetCategoriesList(string type);
 
-	//public async Task<SqlResponse> InsertNewRecipy(int id);
+	//public Task<SqlResponse> InsertNewRecipy(int id);
 
-	//public async Task<SqlResponse> UpdateRecipy(Recipy recipy);
+	//public Task<SqlResponse> UpdateRecipy(Recipy recipy);
 
-	//public async Task<SqlResponse> DeleteRecipy(int id);
+	//public Task<SqlResponse> DeleteRecipy(int id);
 }
