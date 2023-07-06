@@ -52,7 +52,7 @@ var TestSqlOps = new SqlOperations(true);
 //Console.WriteLine($"succes: {UpdateResponse.Success} - Message: {UpdateResponse.Message}");
 
 
-var deleteResponse = await TestSqlOps.DeleteIngredient(23);
+var deleteResponse = await TestSqlOps.IngredientsOps.DeleteIngredient(23);
 
 if (deleteResponse.Success)
 {

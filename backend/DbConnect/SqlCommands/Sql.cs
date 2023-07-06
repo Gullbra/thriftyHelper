@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ThriftyHelper.Backend.ClassLibrary;
 
 namespace DbConnect.Sql;
-internal class Sql
+public class Sql
 {
 	public Sql(bool dbLocal)
 	{

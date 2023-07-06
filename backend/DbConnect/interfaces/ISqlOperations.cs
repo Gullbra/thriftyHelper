@@ -1,4 +1,5 @@
 ﻿using DbConnect.Responses;
+using Npgsql;
 using ThriftyHelper.Backend.ClassLibrary;
 
 namespace DbConnect.interfaces;
@@ -28,6 +29,7 @@ public interface ISqlOperations
 internal interface IIngredientsMethods
 {
 	Task<SqlResponse<List<Ingredient>>> GetIngredientsList();
+	Task<SqlResponse<Ingredient?>> GetOneIngredientById(int ingredientId);
 	Task<SqlResponse<Ingredient>> InsertNewIngredient(Ingredient newIngredient);
 	Task<SqlResponse<Ingredient>> UpdateIngredient(Ingredient updatedIngredient, Ingredient currentIngredient);
 	Task<SqlResponse<Ingredient?>> DeleteIngredient(int ingredientId);
@@ -36,7 +38,8 @@ internal interface IIngredientsMethods
 internal interface IRecipyMethods
 {
 	Task<SqlResponse<List<Recipy>>> GetRecipyList();
-	Task<SqlResponse<Recipy>> GetOneRecipyById(int recipyId);
+	Task<SqlResponse<Recipy?>> GetOneRecipyById(int recipyId);
+	Task<SqlResponse<Recipy>> InsertNewRecipy(Ingredient newRecipy);
 	Task<SqlResponse<Recipy>> UpdateRecipy(Recipy updatedRecipy, Recipy currentRecipy);
 	Task<SqlResponse<Recipy>> DeleteRecipy(int recipyId);
 }
