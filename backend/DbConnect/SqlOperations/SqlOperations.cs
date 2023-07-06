@@ -1,14 +1,8 @@
 ﻿
 using DbConnect.interfaces;
 using DbConnect.Responses;
-using DbConnect.Sql;
 using Npgsql;
-using System.Data.Common;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Reflection.PortableExecutable;
 using ThriftyHelper.Backend.ClassLibrary;
-using ThriftyHelper.Backend.DbConnect;
 
 namespace DbConnect.SqlOperations;
 public class SqlOperations : ISqlOperations
@@ -304,6 +298,11 @@ public class SqlOperations : ISqlOperations
 		}
 	}
 
+	public async Task<SqlResponse<List<Recipy>>> GetRecipyList()
+	{
+		throw new NotImplementedException();
+	}
+
 
 	/* Helper mehtods*/
 	private async Task<SqlResponse<List<Category>>> GetAllCategoriesForItemType(string categoryType)
@@ -399,6 +398,14 @@ public class SqlOperations : ISqlOperations
 	}
 
 }
+
+
+internal class IngredientMethods : IIngredientsMethods 
+{ 
+}
+
+
+
 
 //public class SqlOperations
 //{

@@ -144,9 +144,7 @@ internal class Sql
 			ON CONFLICT DO NOTHING;
 		";
 
-		DeleteIngredient = $@"
-			DELETE FROM {ingredientsTableName} WHERE ingredient_id = @i_id;
-		";
+		DeleteIngredient = $@"DELETE FROM {ingredientsTableName} WHERE ingredient_id = @i_id;";
 	}
 
 	private string[] TableNames { get; }
