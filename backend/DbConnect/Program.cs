@@ -52,15 +52,19 @@ var TestSqlOps = new SqlOperations(true);
 //Console.WriteLine($"succes: {UpdateResponse.Success} - Message: {UpdateResponse.Message}");
 
 
-var deleteResponse = await TestSqlOps.IngredientsOps.DeleteIngredient(23);
+var getRecipiesTest = await TestSqlOps.RecipiesOps.GetRecipyList();
 
-if (deleteResponse.Success)
+if (getRecipiesTest.Success)
 {
-	Console.WriteLine($"Success: {deleteResponse.Success}, deleted: " + deleteResponse.Data.Name);
+	//Console.WriteLine($"Success: {getRecipiesTest.Success}, deleted: " + getRecipiesTest.Data.Name);
+	foreach(var recipy in getRecipiesTest.Data)
+	{
+		Console.WriteLine($"Name: {recipy.Name}, #ofIng: {recipy.Ingredients.Count}, #ofCat {recipy.InCategories.Count}");
+	}
 }
 else
 {
-	Console.WriteLine($"Succes: {deleteResponse.Success}, Message: {deleteResponse.Message}");
+	Console.WriteLine($"Succes: {getRecipiesTest.Success}, Message: {getRecipiesTest.Message}");
 }
 
 

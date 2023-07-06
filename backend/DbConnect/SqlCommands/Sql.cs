@@ -39,19 +39,12 @@ public class Sql
 		;";
 
 		GetCategoriesFromRecipyId = $@"
-			SELECT category_name 
-			FROM {categoriesInRecipiesTableName}
-			WHERE recipy_id = @id
+			SELECT c_t.category_name 
+			FROM {categoriesInRecipiesTableName} c_r_t
+				INNER JOIN {recipyCategoriesTableName} c_t
+					ON c_r_t.recipy_category_id = c_t.recipy_category_id
+			WHERE c_r_t.recipy_id = @id 
 		;";
-
-		GetRecipies = $@"
-			SELECT st.*, ip.*, si.*
-			FROM {recipyTableName} st
-				INNER JOIN {ingredientsInRecipiesTableName} ip
-					ON st.recipy_id = ip.recipy_id
-				INNER JOIN {ingredientsTableName} si
-					ON ip.ingredient_id = si.ingredient_id;
-		";
 
 		InsertNewIngredientCategory = $@"
 			INSERT INTO {ingredientCategoriesTableName}(
@@ -145,6 +138,28 @@ public class Sql
 		";
 
 		DeleteIngredient = $@"DELETE FROM {ingredientsTableName} WHERE ingredient_id = @i_id;";
+
+		GetIngredientsInRecipiesMapByRecipy = @$"
+			SELECT * FROM {ingredientsInRecipiesTableName}
+			WHERE recipy_id = @id
+		";		
+		GetIngredientsInRecipiesMapByIngredient = @$"
+			SELECT * FROM {ingredientsInRecipiesTableName}
+			WHERE ingredient_id = @id
+		";
+
+		//GetRecipies = $@"
+		//	SELECT st.*, ip.*, si.*
+		//	FROM {recipyTableName} st
+		//		INNER JOIN {ingredientsInRecipiesTableName} ip
+		//			ON st.recipy_id = ip.recipy_id
+		//		INNER JOIN {ingredientsTableName} si
+		//			ON ip.ingredient_id = si.ingredient_id;
+		//";
+
+		GetRecipies = $@"
+			SELECT * FROM {recipyTableName}
+		";
 	}
 
 	private string[] TableNames { get; }
@@ -164,4 +179,6 @@ public class Sql
 	public string DeleteOldIngredintCategoryMappings { get; }
 	public string InsertNewIngredientCategoryMapping { get; }
 	public string DeleteIngredient { get; }
+	public string GetIngredientsInRecipiesMapByRecipy { get; }
+	public string GetIngredientsInRecipiesMapByIngredient { get; }
 }
