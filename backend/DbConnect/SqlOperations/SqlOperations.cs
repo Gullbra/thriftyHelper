@@ -68,47 +68,76 @@ public class RecipiesMethods : IRecipyMethods
 
 	public async Task<SqlResponse<List<Recipy>>> GetRecipyList()
 	{
+		try
 		{
-			try
+			using var command = dbDataSource.CreateCommand(sqlStrings.GetRecipies);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Recipy> recipyList = new();
+			while (await reader.ReadAsync())
 			{
-				using var command = dbDataSource.CreateCommand(sqlStrings.GetRecipies);
-				await using var reader = await command.ExecuteReaderAsync();
+				var categoriesResponse = await parent.CategoriesOps.GetCategoriesForItem("recipy", reader.GetInt32(0));
+				var ingredientsMapResponse = await parent.GetIngredientsInRecipyMap("recipy", reader.GetInt32(0));
 
-				List<Recipy> recipyList = new();
-				while (await reader.ReadAsync())
-				{
-					var categoriesResponse = await parent.CategoriesOps.GetCategoriesForItem("recipy", reader.GetInt32(0));
-					var ingredientsMapResponse = await parent.GetIngredientsInRecipyMap("recipy", reader.GetInt32(0));
+				if (!categoriesResponse.Success || categoriesResponse.Data == null)
+					return new SqlResponse<List<Recipy>>(false, new(), "GetRecipyList()" + categoriesResponse.Message);
 
-					if (!categoriesResponse.Success || categoriesResponse.Data == null)
-						return new SqlResponse<List<Recipy>>(false, new(), "GetRecipyList()" + categoriesResponse.Message);
+				if (!ingredientsMapResponse.Success || ingredientsMapResponse.Data == null)
+					return new SqlResponse<List<Recipy>>(false, new(), "GetRecipyList():" + ingredientsMapResponse.Message);
 
-					if (!ingredientsMapResponse.Success || ingredientsMapResponse.Data == null)
-						return new SqlResponse<List<Recipy>>(false, new(), "GetRecipyList():" + ingredientsMapResponse.Message);
-
-					recipyList.Add(new(
-						id: reader.GetInt32(0),
-						name: reader.GetString(1),
-						ingredients: ingredientsMapResponse.Data.Select(mapping => new InredientReference(mapping.IngredientId, mapping.Quantity)).ToList(),
-						inCategories: categoriesResponse.Data,
-						description: reader.GetString(2)));
-				}
-
-				return new SqlResponse<List<Recipy>>(true, recipyList, $"Success!");
+				recipyList.Add(new(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					ingredients: ingredientsMapResponse.Data.Select(mapping => new InredientReference(mapping.IngredientId, mapping.Quantity)).ToList(),
+					inCategories: categoriesResponse.Data,
+					description: reader.GetString(2)));
 			}
-			catch (Exception ex)
+
+			return new SqlResponse<List<Recipy>>(true, recipyList, $"Success!");
+		}
+		catch (Exception ex)
+		{
+			return new SqlResponse<List<Recipy>>(false, new List<Recipy>(), $"GetRecipyList(): Error: ${ex.Message}");
+		}
+	}
+
+	public async Task<SqlResponse<Recipy?>> GetOneRecipyById(int recipyId)
+	{
+		try
+		{
+			using var command = dbDataSource.CreateCommand(sqlStrings.GetRecipyById);
+			command.Parameters.AddWithValue("@id", recipyId);
+			await using var reader = await command.ExecuteReaderAsync();
+
+			List<Recipy> recipyList = new();
+			while (await reader.ReadAsync())
 			{
-				return new SqlResponse<List<Recipy>>(false, new List<Recipy>(), $"GetRecipyList(): Error: ${ex.Message}");
+				var categoriesResponse = await parent.CategoriesOps.GetCategoriesForItem("recipy", recipyId);
+				var ingredientsMapResponse = await parent.GetIngredientsInRecipyMap("recipy", recipyId);
+
+				if (!categoriesResponse.Success || categoriesResponse.Data == null)
+					return new SqlResponse<Recipy?>(false, null, "GetOneRecipyById():" + categoriesResponse.Message);
+
+				if (!ingredientsMapResponse.Success || ingredientsMapResponse.Data == null)
+					return new SqlResponse<Recipy?>(false, null, "GetOneRecipyById():" + ingredientsMapResponse.Message);
+
+				recipyList.Add(new(
+					id: reader.GetInt32(0),
+					name: reader.GetString(1),
+					ingredients: ingredientsMapResponse.Data.Select(mapping => new InredientReference(mapping.IngredientId, mapping.Quantity)).ToList(),
+					inCategories: categoriesResponse.Data,
+					description: reader.GetString(2)));
 			}
+
+			return new SqlResponse<Recipy?>(true, recipyList.Count == 0 ? null : recipyList[0], $"Success!");
+		}
+		catch (Exception ex)
+		{
+			return new SqlResponse<Recipy?>(false, null, $"GetOneRecipyById(): Error: ${ex.Message}");
 		}
 	}
 
 	public async Task<SqlResponse<Recipy>> DeleteRecipy(int recipyId)
-	{
-		throw new NotImplementedException();
-	}
-
-	public async Task<SqlResponse<Recipy?>> GetOneRecipyById(int recipyId)
 	{
 		throw new NotImplementedException();
 	}

@@ -148,6 +148,11 @@ public class Sql
 			WHERE ingredient_id = @id
 		";
 
+		GetRecipyById = $@"
+			SELECT * FROM {recipyTableName}
+			WHERE recipy_id = @id			
+		";
+
 		//GetRecipies = $@"
 		//	SELECT st.*, ip.*, si.*
 		//	FROM {recipyTableName} st
@@ -181,4 +186,5 @@ public class Sql
 	public string DeleteIngredient { get; }
 	public string GetIngredientsInRecipiesMapByRecipy { get; }
 	public string GetIngredientsInRecipiesMapByIngredient { get; }
+	public string GetRecipyById { get; }
 }
